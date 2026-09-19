@@ -1,0 +1,5 @@
+{
+  "name": "Dometic DDM (CFX3, FreshJet)",
+  "render_readme": true,
+  "homeassistant": "2025.1.0"
+}

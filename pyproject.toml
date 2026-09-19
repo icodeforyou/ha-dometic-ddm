@@ -1,0 +1,101 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyddm"
+version = "0.1.0a0"
+description = "Transport-independent implementation of Dometic's DDM1/DDM2 BLE data model (CFX3, FreshJet, CFX5, ...)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "Johan Thorstedt" }]
+keywords = ["dometic", "cfx3", "freshjet", "ble", "bluetooth", "home-assistant"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Home Automation",
+  "Typing :: Typed",
+]
+# The core package has no runtime dependencies. Transports are optional.
+dependencies = []
+
+[project.optional-dependencies]
+ble = ["bleak>=0.22"]
+
+[project.urls]
+Homepage = "https://github.com/johanthorstedt/ha-dometic-ddm"
+Documentation = "https://github.com/johanthorstedt/ha-dometic-ddm/tree/main/docs"
+
+[dependency-groups]
+dev = [
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "pytest>=8",
+  "pytest-asyncio>=0.24",
+  # Pulls in homeassistant, bleak and bleak-retry-connector at the versions HA pins.
+  "pytest-homeassistant-custom-component>=0.13.200",
+  # Requirements of HA's bluetooth/usb components, needed to load the integration in tests.
+  "bluetooth-adapters>=0.21",
+  "bluetooth-auto-recovery>=1.4",
+  "aiousbwatcher>=1.1",
+  "pyserial>=3.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyddm"]
+
+[tool.hatch.build.targets.sdist]
+include = ["pyddm", "tests", "README.md", "LICENSE"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["custom_components/dometic_ddm/pyddm"]
+
+[tool.ruff.lint]
+select = [
+  "E", "W",   # pycodestyle
+  "F",        # pyflakes
+  "I",        # isort
+  "UP",       # pyupgrade
+  "B",        # bugbear
+  "SIM",      # simplify
+  "RUF",      # ruff-specific
+  "PL",       # pylint
+  "T20",      # no print
+  "PT",       # pytest style
+  "ASYNC",    # asyncio pitfalls
+]
+ignore = [
+  "PLR2004",  # magic values are the whole point of protocol tests
+  "PLR0913",  # entity constructors take many arguments
+  "PLR0911",  # codecs dispatch on type and return early
+  "PLR0912",
+  "RUF012",   # HA entity class attributes are mutable by convention
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR", "SIM117"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pyddm", "custom_components"]
+force-sort-within-sections = true
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+files = ["pyddm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+  "error::DeprecationWarning:pyddm",
+]
