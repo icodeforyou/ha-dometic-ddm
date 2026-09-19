@@ -431,11 +431,19 @@ class Session:
         """
         if self._closed:
             raise SessionError("session is closed")
+        # Arm the machine *before* the transport connects: a CFX3 sends its first ACK as
+        # soon as notifications are enabled, possibly before ``connect()`` returns. Frames
+        # to send are only queued here; the writer task flushes them once connected.
         self.transport.on_notify(self._handle_notify)
-        if not self.transport.connected:
-            await self.transport.connect()
-        self._writer_task = asyncio.create_task(self._writer_loop(), name="pyddm-writer")
         self._dispatch(self.machine.start())
+        if not self.transport.connected:
+            try:
+                await self.transport.connect()
+            except Exception:
+                self.transport.on_notify(None)
+                self.machine.close()
+                raise
+        self._writer_task = asyncio.create_task(self._writer_loop(), name="pyddm-writer")
         if ready_timeout is not None:
             await self.wait_ready(ready_timeout)
 
