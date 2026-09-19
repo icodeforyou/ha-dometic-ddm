@@ -8,7 +8,7 @@ version = "0.1.0a0"
 description = "Transport-independent implementation of Dometic's DDM1/DDM2 BLE data model (CFX3, FreshJet, CFX5, ...)"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 authors = [{ name = "Johan Thorstedt" }]
 keywords = ["dometic", "cfx3", "freshjet", "ble", "bluetooth", "home-assistant"]
 classifiers = [
@@ -16,8 +16,8 @@ classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Home Automation",
   "Typing :: Typed",
 ]
@@ -38,13 +38,22 @@ dev = [
   "pytest>=8",
   "pytest-asyncio>=0.24",
   # Pulls in homeassistant, bleak and bleak-retry-connector at the versions HA pins.
-  "pytest-homeassistant-custom-component>=0.13.200",
-  # Requirements of HA's bluetooth/usb components, needed to load the integration in tests.
-  "bluetooth-adapters>=0.21",
-  "bluetooth-auto-recovery>=1.4",
-  "aiousbwatcher>=1.1",
-  "pyserial>=3.5",
+  "pytest-homeassistant-custom-component>=0.13.316",
+  # Requirements of HA's bluetooth/usb/bluetooth_adapters components (their manifests),
+  # needed to load the integration's `bluetooth_adapters` dependency in tests.
+  "aiousbwatcher>=1.1.2",
+  "bluetooth-adapters>=2.4.0",
+  "bluetooth-auto-recovery>=1.6.4",
+  "bluetooth-data-tools>=1.29.24",
+  "dbus-fast>=5.0.22",
+  "habluetooth>=6.26.11",
+  "serialx>=1.10.0",
 ]
+
+[tool.uv]
+# The dev group pulls in Home Assistant, which only supports the newest Python. Resolve the
+# lock for that interpreter; pyddm itself stays usable on 3.13.
+environments = ["python_full_version >= '3.14.2'"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["pyddm"]
@@ -53,7 +62,7 @@ packages = ["pyddm"]
 include = ["pyddm", "tests", "README.md", "LICENSE"]
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 line-length = 100
 extend-exclude = ["custom_components/dometic_ddm/pyddm"]
 
@@ -87,7 +96,7 @@ known-first-party = ["pyddm", "custom_components"]
 force-sort-within-sections = true
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 strict = true
 warn_unreachable = true
 files = ["pyddm"]

@@ -82,6 +82,6 @@ company id `0x0845` → DDM2.
 
 ## Tooling
 
-Python ≥ 3.12 for the integration (match current HA). `ruff` + `mypy --strict` on `pyddm`,
+Python 3.14 for the dev environment (current HA needs ≥ 3.14.2; `pyddm` itself supports ≥ 3.13). `ruff` + `mypy --strict` on `pyddm`,
 `pytest` for everything, `pytest-homeassistant-custom-component` for the integration.
 Commit messages in English, conventional-commits style.

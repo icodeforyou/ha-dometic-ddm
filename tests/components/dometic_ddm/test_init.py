@@ -87,7 +87,9 @@ async def test_setup_runs_handshake_and_creates_entities(
     assert climate.attributes[ATTR_MIN_TEMP] == -22.0
     assert climate.attributes[ATTR_MAX_TEMP] == 10.0
 
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, CFX3_ADDRESS)})
+    device = dr.async_get(hass).async_get_device_by_identifier(
+        (DOMAIN, CFX3_ADDRESS), cfx3_entry.entry_id
+    )
     assert device is not None
     assert device.manufacturer == "Dometic"
     assert device.model == "CFX3 45"

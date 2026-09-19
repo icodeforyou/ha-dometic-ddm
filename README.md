@@ -85,7 +85,7 @@ Things the code assumes but nobody has seen on a device yet, all marked
 ## Development
 
 ```sh
-uv sync --group dev          # creates .venv with HA test harness, ruff, mypy, pytest
+uv sync --group dev          # Python 3.14 .venv with HA test harness, ruff, mypy, pytest (from uv.lock)
 uv run ruff check . && uv run ruff format --check .
 uv run mypy                  # strict, pyddm only
 uv run pytest -q
