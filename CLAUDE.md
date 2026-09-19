@@ -67,6 +67,13 @@ company id `0x0845` → DDM2.
 - Read before write: get subscribe/decode stable on a device before implementing SET.
 - Never guess protocol bytes. If a frame is unknown, log it hex-dumped and stop.
 
+## Hardware testing without HA
+
+`uv run python -m tools.ac_console` → http://127.0.0.1:8765/ drives a pyddm Session over the
+laptop's BlueZ adapter: scan, connect, subscribe, hex frame log, gated writes. Use it for
+every protocol experiment before touching the integration; save frame logs under
+`docs/captures/`. It must keep using pyddm's Session/codecs, never its own byte handling.
+
 ## Open questions (do not silently assume)
 
 1. Does FJZ7 expose the `ac` class (class 2, group 1) over BLE, or only over WiFi/cloud?

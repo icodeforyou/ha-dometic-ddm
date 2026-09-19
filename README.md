@@ -73,6 +73,24 @@ Things the code assumes but nobody has seen on a device yet, all marked
 - the local WiFi TCP transport (base64 lines, `\r`), including its port, which the app
   source does not name.
 
+## Testing from a laptop, without Home Assistant
+
+`tools/ac_console` is a local web console that drives the same `pyddm` session over this
+machine's Bluetooth adapter (BlueZ via bleak). It is the tool for the first hardware
+session and for showing the device owner what the integration will do:
+
+```sh
+uv run python -m tools.ac_console          # then open http://127.0.0.1:8765/
+uv run python -m tools.ac_console -v       # also hex-dumps every frame to the terminal
+```
+
+Scan, pick the device, connect, **Subscribe dashboard**. The page shows a FreshJet panel
+(inside/outside/target temperature, power, mode, fan, light, errors …) or the CFX3 values,
+a table of everything received, and a frame log with every byte in both directions and
+its decoding. Writes (power, mode, target temperature, fan, light, any parameter, raw
+frames) are disabled until you tick *Enable writes*; every write is logged. Handshake
+variants and BLE pairing are selectable because both are unverified.
+
 ## Hardware bring-up plan
 
 1. Flash `esphome/xiao-esp32c3-proxy.yaml` (stock ESPHome, `bluetooth_proxy: active: true`).

@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dometic DDM Console</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --ink: #1d232b; --muted: #6b7280; --line: #e2e5ea;
+    --accent: #0b6e99; --accent-ink: #ffffff; --ok: #1a7f4b; --warn: #b7791f; --bad: #b42318;
+    --tx: #0b6e99; --rx: #6b21a8; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1216; --panel: #171b21; --ink: #e6e8eb; --muted: #9aa3ad; --line: #2a313a;
+            --accent: #3fa7d6; --accent-ink: #06131a; --ok: #3ccf7a; --warn: #f0b451; --bad: #ff6b60;
+            --tx: #3fa7d6; --rx: #c084fc; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
+  header h1 { font-size: 17px; margin: 0; font-weight: 650; letter-spacing: .2px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); } .dot.warn { background: var(--warn); } .dot.bad { background: var(--bad); }
+  main { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; padding: 16px 20px; max-width: 1500px; margin: 0 auto; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  section h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, select, input { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 6px 10px; }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  button.danger { border-color: var(--bad); color: var(--bad); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; min-height: 74px; }
+  .tile .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+  .tile .v { font-size: 24px; font-weight: 650; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .tile .s { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+  .tile.big .v { font-size: 34px; }
+  .tile.stale { opacity: .5; }
+  .controls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .ctl { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; }
+  .ctl .k { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .lock { border: 1px dashed var(--warn); border-radius: 9px; padding: 8px 12px; display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .lock input { width: 18px; height: 18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+  td.mono, .mono { font-family: var(--mono); font-size: 12px; }
+  #log { height: 420px; overflow: auto; font-family: var(--mono); font-size: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+  #log div { white-space: pre-wrap; word-break: break-all; padding: 1px 0; }
+  .tx { color: var(--tx); } .rx { color: var(--rx); }
+  .info { color: var(--muted); } .warning { color: var(--warn); } .error { color: var(--bad); }
+  .t { color: var(--muted); }
+  #devices tr { cursor: pointer; } #devices tr:hover { background: var(--bg); }
+  #devices tr.ddm td:first-child::before { content: "● "; color: var(--ok); }
+  .small { font-size: 12px; color: var(--muted); }
+  .grow { flex: 1 1 auto; }
+  footer { padding: 10px 20px 30px; color: var(--muted); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Dometic DDM Console</h1>
+  <span class="pill"><span id="ws-dot" class="dot"></span><span id="ws-text">server</span></span>
+  <span class="pill"><span id="dev-dot" class="dot"></span><span id="dev-text">no device</span></span>
+  <span class="pill" id="proto-pill">—</span>
+  <span class="pill" id="writes-pill">read-only</span>
+  <span class="grow"></span>
+  <button id="btn-disconnect" class="danger" disabled>Disconnect</button>
+</header>
+
+<main>
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <section>
+      <h2>1 · Find the device
+        <span class="row">
+          <select id="scan-seconds"><option value="4">4 s</option><option value="6" selected>6 s</option><option value="10">10 s</option></select>
+          <button id="btn-scan" class="primary">Scan</button>
+          <label class="small"><input type="checkbox" id="show-all"> show non-Dometic</label>
+        </span>
+      </h2>
+      <table>
+        <thead><tr><th>Name</th><th>Address</th><th>RSSI</th><th>Protocol</th><th>Manufacturer data</th></tr></thead>
+        <tbody id="devices"><tr><td colspan="5" class="small">Press Scan. FreshJet should show manufacturer id 0x0845 (DDM2), a CFX3 shows its name (DDM1).</td></tr></tbody>
+      </table>
+      <div class="row" style="margin-top:10px">
+        <input id="address" placeholder="AA:BB:CC:DD:EE:FF" style="width:190px" class="mono">
+        <select id="protocol"><option value="ddm2">DDM2 (FreshJet, CFX5)</option><option value="ddm1">DDM1 (CFX3)</option></select>
+        <select id="handshake" title="Handshake variant. DDM2 default = none (as the hardware-verified CFX5 code). DDM1 default = wait ACK → HELLO → wait ACK.">
+          <option value="default">handshake: default</option>
+          <option value="none">handshake: none</option>
+          <option value="hello">handshake: HELLO/ACK</option>
+          <option value="ping">handshake: PING first</option>
+        </select>
+        <button id="btn-connect" class="primary">Connect</button>
+        <button id="btn-pair" title="Ask BlueZ to bond. The Dometic app bonds on Android.">Pair / bond</button>
+        <button id="btn-ping" title="Send DDM1 PING (02) to nudge the device">Send PING</button>
+        <button id="btn-subscribe" title="Subscribe to the dashboard set for this protocol">Subscribe dashboard</button>
+      </div>
+    </section>
+
+    <section id="ac-section">
+      <h2>2 · Air conditioner <span class="small" id="ac-ident"></span></h2>
+      <div class="tiles">
+        <div class="tile big" data-k="ac.itemp"><div class="k">Inside</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile big" data-k="ac.ttemp"><div class="k">Target</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile big" data-k="ac.etemp"><div class="k">Outside</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.on"><div class="k">Power</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.md"><div class="k">Mode</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.operst"><div class="k">Operating state</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.fspd"><div class="k">Fan speed</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.fs"><div class="k">Fan %</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.lgt"><div class="k">Light</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.dmr"><div class="k">Dimmer</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.pwr"><div class="k">Power draw</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.curr"><div class="k">Current</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.eco"><div class="k">Eco</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.sleep"><div class="k">Sleep</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.flaps"><div class="k">Flaps</div><div class="v">—</div><div class="s"></div></div>
+        <div class="tile" data-k="ac.status"><div class="k">Errors</div><div class="v">—</div><div class="s"></div></div>
+      </div>
+
+      <h2 style="margin-top:16px">3 · Controls</h2>
+      <div class="lock">
+        <input type="checkbox" id="enable-writes">
+        <label for="enable-writes"><b>Enable writes.</b> Off by default: read and verify decoding against the AC's own display first. Every write is logged.</label>
+      </div>
+      <div class="controls">
+        <div class="ctl"><div class="k">Power (ac.on)</div><div class="seg"><button data-w="ac.on" data-v="1">On</button><button data-w="ac.on" data-v="0">Off</button></div></div>
+        <div class="ctl"><div class="k">Mode (ac.md)</div><div class="seg" id="mode-seg"></div></div>
+        <div class="ctl"><div class="k">Target temperature (ac.ttemp)</div>
+          <div class="row"><button data-step="-1">−1</button><input id="ttemp" type="number" step="0.5" value="21" style="width:80px"><button data-step="1">+1</button><button id="btn-ttemp" class="primary">Set</button></div></div>
+        <div class="ctl"><div class="k">Fan speed (ac.fspd, enum unknown → 0…3)</div><div class="seg"><button data-w="ac.fspd" data-v="0">0</button><button data-w="ac.fspd" data-v="1">1</button><button data-w="ac.fspd" data-v="2">2</button><button data-w="ac.fspd" data-v="3">3</button></div></div>
+        <div class="ctl"><div class="k">Light (ac.lgt)</div><div class="seg"><button data-w="ac.lgt" data-v="1">On</button><button data-w="ac.lgt" data-v="0">Off</button></div></div>
+        <div class="ctl"><div class="k">Eco (ac.eco)</div><div class="seg"><button data-w="ac.eco" data-v="1">On</button><button data-w="ac.eco" data-v="0">Off</button></div></div>
+        <div class="ctl"><div class="k">Sleep (ac.sleep)</div><div class="seg"><button data-w="ac.sleep" data-v="1">On</button><button data-w="ac.sleep" data-v="0">Off</button></div></div>
+        <div class="ctl"><div class="k">Any parameter</div>
+          <div class="row"><input id="w-class" placeholder="class" style="width:70px" class="mono" list="classes"><input id="w-param" placeholder="param" style="width:90px" class="mono" list="params"><input id="w-value" placeholder="value / enum name" style="width:120px"><button id="btn-write">Write</button></div>
+          <div class="row" style="margin-top:6px"><button id="btn-sub-one" title="Subscribe to class.param only">Subscribe</button><span class="small" id="param-hint"></span></div>
+          <datalist id="classes"></datalist><datalist id="params"></datalist>
+        </div>
+        <div class="ctl"><div class="k">Raw frame (hex, e.g. <span class="mono">12 0A 00 02 01</span>)</div>
+          <div class="row"><input id="raw" class="mono" placeholder="12 0A 00 02 01" style="width:220px"><button id="btn-raw">Send</button></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>All received values <span class="small" id="values-count"></span></h2>
+      <table><thead><tr><th>Parameter</th><th>Value</th><th>Raw</th><th>Age</th></tr></thead><tbody id="values"></tbody></table>
+    </section>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+    <section>
+      <h2>Frame log
+        <span class="row">
+          <label class="small"><input type="checkbox" id="log-pause"> pause</label>
+          <label class="small"><input type="checkbox" id="log-hide-ack" checked> hide ACKs</label>
+          <button id="btn-clear">Clear</button>
+          <button id="btn-copy">Copy</button>
+        </span>
+      </h2>
+      <div id="log"></div>
+      <p class="small">TX = sent by this console, RX = sent by the device. Bytes are exactly what went over GATT. Unknown frames are shown and never acted on.</p>
+    </section>
+    <section>
+      <h2>Checklist for tomorrow</h2>
+      <ol class="small" style="margin:0;padding-left:18px;line-height:1.7">
+        <li>Scan: does the FreshJet advertise manufacturer id <span class="mono">0x0845</span> and service <span class="mono">537a0400</span>? Note name + data.</li>
+        <li>Connect as DDM2, handshake <i>default</i>. Then <b>Subscribe dashboard</b>. Do PUBLISH frames (<span class="mono">10 …</span>) arrive for <span class="mono">ac.*</span>? That answers open question 1.</li>
+        <li>If nothing arrives: try <span class="mono">gw.avl</span> alone, then handshake <i>HELLO/ACK</i>, then <i>Pair</i>.</li>
+        <li>Compare inside temperature and target on the panel with the AC's remote/display.</li>
+        <li>Only then enable writes: set target ±1 °C, watch the echoed PUBLISH, confirm on the AC.</li>
+        <li>Copy the frame log and save it under <span class="mono">docs/captures/</span>.</li>
+      </ol>
+    </section>
+  </div>
+</main>
+<footer>pyddm test console · local only · same codecs and session as the Home Assistant integration</footer>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const state = { ws: null, protocol: 'ddm2', ready: false, connected: false, writes: false, values: {}, params: [], enums: {} };
+  const MODES = ['Cool', 'Heat', 'Fan', 'Auto', 'Dry', 'Turbo'];
+
+  // ---- websocket -------------------------------------------------------------
+  function connectWs() {
+    const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+    state.ws = ws;
+    ws.onopen = () => setPill('ws', 'ok', 'server connected');
+    ws.onclose = () => { setPill('ws', 'bad', 'server offline, retrying'); setTimeout(connectWs, 1500); };
+    ws.onmessage = (ev) => onMessage(JSON.parse(ev.data));
+  }
+  function send(msg) {
+    if (!state.ws || state.ws.readyState !== 1) return log('error', 'not connected to server');
+    state.ws.send(JSON.stringify(msg));
+  }
+  function setPill(which, cls, text) {
+    $(`#${which}-dot`).className = 'dot ' + cls; $(`#${which}-text`).textContent = text;
+  }
+
+  // ---- incoming ----------------------------------------------------------------
+  function onMessage(m) {
+    switch (m.type) {
+      case 'state': return onState(m);
+      case 'scan': return renderDevices(m.devices);
+      case 'frame': return logFrame(m);
+      case 'update': return onUpdate(m);
+      case 'log': return log(m.level, m.msg, m.ts);
+      case 'control': return;
+    }
+  }
+  function onState(s) {
+    state.protocol = s.protocol || state.protocol; state.ready = s.ready; state.connected = s.connected; state.writes = s.writes_enabled;
+    const txt = s.address ? `${s.address}${s.connected ? '' : ' (not connected)'}${s.ready ? ' · READY' : s.connected ? ' · handshake…' : ''}` : 'no device';
+    setPill('dev', s.ready ? 'ok' : s.connected ? 'warn' : '', txt);
+    $('#proto-pill').textContent = (s.protocol || '—').toUpperCase() + (s.handshake && s.handshake !== 'default' ? ` · hs:${s.handshake}` : '');
+    $('#writes-pill').textContent = s.writes_enabled ? '⚠ WRITES ENABLED' : 'read-only';
+    $('#writes-pill').style.color = s.writes_enabled ? 'var(--bad)' : '';
+    $('#enable-writes').checked = s.writes_enabled;
+    $('#btn-disconnect').disabled = !s.connected;
+    document.querySelectorAll('[data-w], #btn-ttemp, #btn-write, #btn-raw').forEach(b => b.disabled = !(s.ready && s.writes_enabled));
+    $('#ac-section').style.display = (s.protocol === 'ddm1') ? 'none' : '';
+    if (s.values) { state.values = {}; s.values.forEach(onUpdate); }
+    if (s.protocol && s.protocol !== state.loadedParams) loadParams(s.protocol);
+  }
+  function onUpdate(u) {
+    state.values[u.name] = u; renderValues();
+    const tile = document.querySelector(`.tile[data-k="${u.name}"]`);
+    if (tile) {
+      tile.querySelector('.v').textContent = short(u);
+      tile.querySelector('.s').textContent = `${u.raw || '∅'}`;
+      tile.classList.toggle('stale', !!u.error);
+    }
+    if (u.name === 'ac.ttemp' && typeof u.value === 'number') $('#ttemp').value = u.value;
+    if (u.name === 'ac.md' && typeof u.value === 'number') markSeg('mode-seg', String(u.value));
+    if (['ac.on','ac.lgt','ac.eco','ac.sleep','ac.fspd'].includes(u.name)) markButtons(u.name, String(u.value));
+    if (u.name === 'ac.mdl' || u.name === 'ac.ver' || u.name === 'gw.ver' || u.name === 'gw.dsn') {
+      const v = state.values; $('#ac-ident').textContent = [v['ac.mdl']?.display, v['ac.ver'] && 'fw ' + v['ac.ver'].display, v['gw.dsn'] && 'dsn ' + v['gw.dsn'].display].filter(Boolean).join(' · ');
+    }
+  }
+  function short(u) {
+    if (u.error) return '⚠';
+    if (u.name === 'ac.status' && u.value && Array.isArray(u.value.error)) { const e = u.value.error.filter(x => x); return e.length ? e.map(x => '0x' + x.toString(16)).join(' ') : 'none'; }
+    if (typeof u.value === 'number' && u.unit === '^C') return u.value.toFixed(1) + ' °C';
+    return u.display;
+  }
+  function markSeg(id, val) { document.querySelectorAll(`#${id} button`).forEach(b => b.classList.toggle('on', b.dataset.v === val)); }
+  function markButtons(name, val) { document.querySelectorAll(`button[data-w="${name}"]`).forEach(b => b.classList.toggle('on', b.dataset.v === val)); }
+
+  // ---- rendering -----------------------------------------------------------------
+  function renderDevices(devices) {
+    const all = $('#show-all').checked;
+    const rows = devices.filter(d => all || d.protocol).map(d =>
+      `<tr class="${d.protocol ? 'ddm' : ''}" data-a="${d.address}" data-p="${d.protocol || ''}"><td>${esc(d.name || '—')}</td><td class="mono">${d.address}</td><td>${d.rssi ?? ''}</td><td>${(d.protocol || '').toUpperCase()}</td><td class="mono small">${Object.entries(d.manufacturer_data || {}).map(([k, v]) => k + ': ' + v).join('<br>')}</td></tr>`);
+    $('#devices').innerHTML = rows.join('') || `<tr><td colspan="5" class="small">No ${all ? '' : 'Dometic '}devices seen. Is the unit powered and within a few metres? Try "show non-Dometic".</td></tr>`;
+    state.lastScan = devices;
+  }
+  function renderValues() {
+    const now = Date.now() / 1000;
+    const rows = Object.values(state.values).sort((a, b) => a.name.localeCompare(b.name)).map(u =>
+      `<tr><td class="mono">${esc(u.name)}${u.instance ? '[' + u.instance + ']' : ''}</td><td>${esc(u.display)}</td><td class="mono small">${u.raw || '∅'}</td><td class="small">${Math.max(0, now - u.ts).toFixed(0)} s</td></tr>`);
+    $('#values').innerHTML = rows.join('');
+    $('#values-count').textContent = rows.length ? `${rows.length} parameters` : '';
+  }
+  setInterval(renderValues, 5000);
+
+  function log(level, msg, ts) {
+    if ($('#log-pause').checked) return;
+    const el = document.createElement('div'); el.className = level;
+    el.textContent = `${stamp(ts)}  ${msg}`; append(el);
+  }
+  function logFrame(f) {
+    if ($('#log-pause').checked) return;
+    if ($('#log-hide-ack').checked && f.hex === '04') return;
+    const el = document.createElement('div'); el.className = f.dir;
+    el.innerHTML = `<span class="t">${stamp(f.ts)}</span>  <b>${f.dir.toUpperCase()}</b>  ${esc(f.hex.padEnd(20))}  <span class="t">${esc(f.text)}</span>`;
+    append(el);
+  }
+  function append(el) { const l = $('#log'); const stick = l.scrollTop + l.clientHeight >= l.scrollHeight - 10; l.appendChild(el); while (l.children.length > 1500) l.removeChild(l.firstChild); if (stick) l.scrollTop = l.scrollHeight; }
+  function stamp(ts) { const d = ts ? new Date(ts * 1000) : new Date(); return d.toTimeString().slice(0, 8) + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
+  function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+  async function loadParams(protocol) {
+    state.loadedParams = protocol;
+    const rows = await (await fetch(`/api/params?protocol=${protocol}`)).json();
+    state.params = rows;
+    $('#classes').innerHTML = [...new Set(rows.map(r => r.class))].map(c => `<option value="${c}">`).join('');
+    updateParamList();
+    const md = rows.find(r => r.class === 'ac' && r.name === 'md');
+    const modes = md && md.enum ? Object.entries(md.enum) : MODES.map((m, i) => [m, i]);
+    $('#mode-seg').innerHTML = modes.map(([name, v]) => `<button data-w="ac.md" data-v="${v}">${esc(name)}</button>`).join('');
+    bindWriteButtons();
+  }
+  function updateParamList() {
+    const cls = $('#w-class').value; const list = state.params.filter(r => r.class === cls);
+    $('#params').innerHTML = list.map(r => `<option value="${r.name}">`).join('');
+    const p = list.find(r => r.name === $('#w-param').value);
+    $('#param-hint').textContent = p ? `${p.type}${p.unit && p.unit !== '-' ? ' · ' + p.unit : ''}${p.writable ? ' · writable' : ' · read-only'}${p.enum ? ' · ' + Object.entries(p.enum).map(([k, v]) => k + '=' + v).join(', ') : ''} · topic ${p.topic}` : '';
+  }
+
+  // ---- actions -----------------------------------------------------------------------
+  $('#btn-scan').onclick = () => send({ cmd: 'scan', seconds: +$('#scan-seconds').value });
+  $('#show-all').onchange = () => state.lastScan && renderDevices(state.lastScan);
+  $('#devices').onclick = (e) => { const tr = e.target.closest('tr[data-a]'); if (!tr) return; $('#address').value = tr.dataset.a; if (tr.dataset.p) $('#protocol').value = tr.dataset.p; };
+  $('#btn-connect').onclick = () => { const a = $('#address').value.trim(); if (!a) return log('error', 'enter or pick an address'); send({ cmd: 'connect', address: a, protocol: $('#protocol').value, handshake: $('#handshake').value }); };
+  $('#btn-disconnect').onclick = () => send({ cmd: 'disconnect' });
+  $('#btn-pair').onclick = () => send({ cmd: 'pair' });
+  $('#btn-ping').onclick = () => send({ cmd: 'ping' });
+  $('#btn-subscribe').onclick = () => send({ cmd: 'subscribe' });
+  $('#enable-writes').onchange = (e) => { if (e.target.checked && !confirm('Enable writes to the device? Make sure the read-outs match the AC display first.')) { e.target.checked = false; return; } send({ cmd: 'enable_writes', on: e.target.checked }); };
+  function bindWriteButtons() { document.querySelectorAll('button[data-w]').forEach(b => b.onclick = () => { const [c, p] = b.dataset.w.split('.'); send({ cmd: 'write', class: c, param: p, value: +b.dataset.v }); }); }
+  bindWriteButtons();
+  document.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { $('#ttemp').value = (+$('#ttemp').value + +b.dataset.step).toFixed(1).replace(/\.0$/, ''); });
+  $('#btn-ttemp').onclick = () => send({ cmd: 'write', class: 'ac', param: 'ttemp', value: +$('#ttemp').value });
+  $('#w-class').oninput = updateParamList; $('#w-param').oninput = updateParamList;
+  $('#btn-write').onclick = () => { const v = $('#w-value').value; send({ cmd: 'write', class: $('#w-class').value, param: $('#w-param').value, value: v === '' ? null : v }); };
+  $('#btn-sub-one').onclick = () => send({ cmd: 'subscribe', params: [[$('#w-class').value, $('#w-param').value]] });
+  $('#btn-raw').onclick = () => send({ cmd: 'raw', hex: $('#raw').value });
+  $('#btn-clear').onclick = () => { $('#log').innerHTML = ''; };
+  $('#btn-copy').onclick = () => navigator.clipboard.writeText([...$('#log').children].map(d => d.textContent).join('\n')).then(() => log('info', 'log copied to clipboard'));
+
+  connectWs();
+})();
+</script>
+</body>
+</html>

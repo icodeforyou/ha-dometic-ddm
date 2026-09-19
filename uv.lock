@@ -2466,6 +2466,7 @@ ble = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "aiohttp" },
     { name = "aiousbwatcher" },
     { name = "bluetooth-adapters" },
     { name = "bluetooth-auto-recovery" },
@@ -2486,6 +2487,7 @@ provides-extras = ["ble"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "aiohttp", specifier = ">=3.10" },
     { name = "aiousbwatcher", specifier = ">=1.1.2" },
     { name = "bluetooth-adapters", specifier = ">=2.4.0" },
     { name = "bluetooth-auto-recovery", specifier = ">=1.6.4" },
