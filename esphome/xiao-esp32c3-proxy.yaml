@@ -1,0 +1,82 @@
+# Seeed Studio XIAO ESP32-C3 as a Home Assistant Bluetooth proxy for Dometic devices.
+#
+# Stock ESPHome, no custom components: all protocol logic lives in the HA integration
+# (see CLAUDE.md, "Thin bridges, all logic in Python"). `active: true` is required because
+# the integration *connects* to the cooler/AC (GATT write + notify), it does not only listen
+# to advertisements.
+#
+# Needs verification on hardware: whether a CFX3 bond (pairing) established through this
+# proxy survives an HA restart (CLAUDE.md open question 2). If it does not, the fallback is
+# custom firmware that keeps the bond in NVS; do not go there until this has been tried.
+#
+# Usage:
+#   1. Copy secrets.yaml.example to secrets.yaml and fill in wifi credentials.
+#   2. esphome run esphome/xiao-esp32c3-proxy.yaml
+#   3. HA discovers the proxy via the ESPHome integration; the Bluetooth integration then
+#      lists it as a remote scanner/connectable adapter.
+
+substitutions:
+  name: dometic-ble-proxy
+  friendly_name: Dometic BLE Proxy
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+
+esp32:
+  board: seeed_xiao_esp32c3
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # BLE and WiFi share the single 2.4 GHz radio on the C3; keep WiFi power save off so the
+  # proxy stays reachable while holding a GATT connection.
+  power_save_mode: none
+  ap:
+    ssid: ${friendly_name} Fallback
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+esp32_ble_tracker:
+  scan_parameters:
+    # Continuous active scanning so the CFX3 (which advertises rarely while connected to
+    # nothing) is picked up quickly. Tune down if the proxy also serves many other devices.
+    interval: 1100ms
+    window: 1100ms
+    active: true
+
+bluetooth_proxy:
+  active: true
+  # One Dometic device holds one connection; the C3 can manage three. Leave room for the
+  # CFX3 and the FJZ7 at once.
+  connection_slots: 3
+
+button:
+  - platform: safe_mode
+    name: Safe mode boot
+    entity_category: diagnostic
+
+sensor:
+  - platform: wifi_signal
+    name: WiFi signal
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: uptime
+    name: Uptime
+    entity_category: diagnostic
