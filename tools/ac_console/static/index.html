@@ -229,7 +229,8 @@
     document.querySelectorAll('[data-w], #btn-ttemp, #btn-write, #btn-raw').forEach(b => b.disabled = !(s.ready && s.writes_enabled));
     $('#ac-section').style.display = (s.protocol === 'ddm1') ? 'none' : '';
     if (s.values) { state.values = {}; s.values.forEach(onUpdate); }
-    if (s.protocol && s.protocol !== state.loadedParams) loadParams(s.protocol);
+    const proto = s.protocol || $('#protocol').value;
+    if (proto !== state.loadedParams) loadParams(proto);
   }
   function onUpdate(u) {
     state.values[u.name] = u; renderValues();
@@ -307,6 +308,8 @@
   }
 
   // ---- actions -----------------------------------------------------------------------
+  $('#protocol').onchange = () => loadParams($('#protocol').value);
+  loadParams($('#protocol').value);
   $('#btn-scan').onclick = () => send({ cmd: 'scan', seconds: +$('#scan-seconds').value });
   $('#show-all').onchange = () => state.lastScan && renderDevices(state.lastScan);
   $('#devices').onclick = (e) => { const tr = e.target.closest('tr[data-a]'); if (!tr) return; $('#address').value = tr.dataset.a; if (tr.dataset.p) $('#protocol').value = tr.dataset.p; };
@@ -316,7 +319,7 @@
   $('#btn-ping').onclick = () => send({ cmd: 'ping' });
   $('#btn-subscribe').onclick = () => send({ cmd: 'subscribe' });
   $('#enable-writes').onchange = (e) => { if (e.target.checked && !confirm('Enable writes to the device? Make sure the read-outs match the AC display first.')) { e.target.checked = false; return; } send({ cmd: 'enable_writes', on: e.target.checked }); };
-  function bindWriteButtons() { document.querySelectorAll('button[data-w]').forEach(b => b.onclick = () => { const [c, p] = b.dataset.w.split('.'); send({ cmd: 'write', class: c, param: p, value: +b.dataset.v }); }); }
+  function bindWriteButtons() { document.querySelectorAll('button[data-w]').forEach(b => { b.disabled = !(state.ready && state.writes); b.onclick = () => { const [c, p] = b.dataset.w.split('.'); send({ cmd: 'write', class: c, param: p, value: +b.dataset.v }); }; }); }
   bindWriteButtons();
   document.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { $('#ttemp').value = (+$('#ttemp').value + +b.dataset.step).toFixed(1).replace(/\.0$/, ''); });
   $('#btn-ttemp').onclick = () => send({ cmd: 'write', class: 'ac', param: 'ttemp', value: +$('#ttemp').value });
