@@ -60,6 +60,7 @@
   #devices tr { cursor: pointer; } #devices tr:hover { background: var(--bg); }
   #devices tr.ddm td:first-child::before { content: "● "; color: var(--ok); }
   .small { font-size: 12px; color: var(--muted); }
+  a { color: var(--accent); }
   .grow { flex: 1 1 auto; }
   footer { padding: 10px 20px 30px; color: var(--muted); font-size: 12px; text-align: center; }
 </style>
@@ -177,7 +178,7 @@
         <li>If nothing arrives: try <span class="mono">gw.avl</span> alone, then handshake <i>HELLO/ACK</i>, then <i>Pair</i>.</li>
         <li>Compare inside temperature and target on the panel with the AC's remote/display.</li>
         <li>Only then enable writes: set target ±1 °C, watch the echoed PUBLISH, confirm on the AC.</li>
-        <li>Copy the frame log and save it under <span class="mono">docs/captures/</span>.</li>
+        <li>Copy the frame log and save it under <a href="https://github.com/icodeforyou/ha-dometic-ddm/tree/main/docs/captures" target="_blank" rel="noopener" class="mono">docs/captures/</a> (the README there has naming and a notes template).</li>
       </ol>
     </section>
   </div>
