@@ -85,3 +85,22 @@ company id `0x0845` → DDM2.
 Python 3.14 for the dev environment (current HA needs ≥ 3.14.2; `pyddm` itself supports ≥ 3.13). `ruff` + `mypy --strict` on `pyddm`,
 `pytest` for everything, `pytest-homeassistant-custom-component` for the integration.
 Commit messages in English, conventional-commits style.
+
+## Releasing (HACS)
+
+Releases are automatic. Never create tags or GitHub releases by hand.
+
+1. `python scripts/release.py <version>` bumps `custom_components/dometic_ddm/manifest.json`
+   and commits `chore(release): v<version>` (refuses a dirty tree or an already-released
+   version). Versions below 1.0.0 or with a suffix become pre-releases.
+2. `git push` to `main`. The `Release` workflow (`.github/workflows/release.yml`) sees a
+   manifest version without a `v<version>` tag, runs ruff + mypy + pytest + HACS validation,
+   tags the commit and publishes a GitHub release with `dometic_ddm.zip` attached.
+   `hacs.json` has `zip_release: true`, so HACS installs from that zip.
+3. Pushes that do not change the manifest version release nothing.
+
+Prerequisites that live on GitHub, not in the repo: HACS validation requires the repository
+to have a description and topics (`gh repo edit --description … --add-topic …`); they were
+set on 2026-09-19. Watch runs with `gh run list` / `gh run watch <id>`.
+
+The `pyddm` version in `pyproject.toml` is separate and only matters for a future PyPI release.
