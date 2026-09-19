@@ -93,18 +93,18 @@ uv run pytest -q
 
 ## Releasing
 
-HACS installs from GitHub releases. `hacs.json` sets `zip_release`, so each release must
-carry `dometic_ddm.zip`; the `Release` workflow builds and attaches it when a `v*` tag is
-pushed, after re-running lint, mypy, tests and HACS validation.
+HACS installs from GitHub releases, and `hacs.json` sets `zip_release`, so each release
+carries `dometic_ddm.zip`. Releases are cut automatically: on every push to `main` the
+`Release` workflow reads `manifest.json`; if that version has no release yet it re-runs
+lint, mypy, tests and HACS validation, tags the commit `v<version>`, and publishes the
+release with the zip attached. Pushes that do not change the version release nothing.
 
 ```sh
-python scripts/release.py 0.2.0   # bumps manifest.json, commits, tags v0.2.0
-git push && git push --tags
+python scripts/release.py 0.2.0   # bumps manifest.json and commits
+git push                          # → release v0.2.0
 ```
 
-The workflow refuses tags that do not match `manifest.json` and releases whose vendored
-`pyddm` copy is stale. Tags below `v1.0.0` or with a suffix (`-beta.1`) are marked
-pre-release.
+Versions below 1.0.0 or with a suffix (`0.3.0-beta.1`) are marked pre-release.
 
 ## Prior art
 

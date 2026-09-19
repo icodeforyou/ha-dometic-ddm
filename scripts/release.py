@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Cut a release: bump manifest.json version, commit, tag.
+"""Bump the integration version and commit it.
 
-    python scripts/release.py 0.2.0            # bump + commit + tag v0.2.0
-    python scripts/release.py --check v0.2.0   # exit 1 unless manifest version == 0.2.0
+    python scripts/release.py 0.2.0
 
-Then ``git push && git push --tags``; .github/workflows/release.yml publishes the GitHub
-release HACS picks up. The pyddm version in pyproject.toml is independent (it will follow
-its own PyPI releases) and is not touched here.
+Then ``git push``. The Release workflow sees a manifest.json version without a release,
+tags the commit v0.2.0 and publishes the GitHub release HACS picks up. No manual tagging.
+The pyddm version in pyproject.toml is independent (it will follow its own PyPI releases)
+and is not touched here.
 """
 
 from __future__ import annotations
@@ -32,41 +32,32 @@ def write_manifest_version(version: str) -> None:
     MANIFEST.write_text(json.dumps(data, indent=2) + "\n")
 
 
-def check(tag: str) -> int:
-    version = tag.removeprefix("v")
-    current = manifest_version()
-    if version != current:
-        sys.stderr.write(f"tag {tag} does not match manifest.json version {current}\n")
-        return 1
-    return 0
+def _git(*args: str) -> str:
+    return subprocess.run(["git", *args], capture_output=True, text=True, check=True).stdout
 
 
 def bump(version: str) -> int:
     if not VERSION_RE.match(version):
         sys.stderr.write(f"not a semantic version: {version}\n")
         return 1
-    tag = f"v{version}"
-    if subprocess.run(
-        ["git", "status", "--porcelain"], capture_output=True, text=True, check=True
-    ).stdout:
+    current = manifest_version()
+    if version == current:
+        sys.stderr.write(f"manifest.json is already at {version}\n")
+        return 1
+    if _git("status", "--porcelain"):
         sys.stderr.write("working tree is not clean\n")
         return 1
-    if subprocess.run(
-        ["git", "tag", "--list", tag], capture_output=True, text=True, check=True
-    ).stdout:
-        sys.stderr.write(f"tag {tag} already exists\n")
+    if _git("tag", "--list", f"v{version}"):
+        sys.stderr.write(f"v{version} was already released\n")
         return 1
     write_manifest_version(version)
-    subprocess.run(["git", "add", str(MANIFEST)], check=True)
-    subprocess.run(["git", "commit", "-q", "-m", f"chore(release): {tag}"], check=True)
-    subprocess.run(["git", "tag", "-a", tag, "-m", f"Release {tag}"], check=True)
-    sys.stdout.write(f"{tag} tagged. Now: git push && git push --tags\n")
+    _git("add", str(MANIFEST))
+    _git("commit", "-q", "-m", f"chore(release): v{version}")
+    sys.stdout.write(f"{current} → {version} committed. Now: git push\n")
     return 0
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) == 2 and argv[0] == "--check":
-        return check(argv[1])
     if len(argv) == 1 and not argv[0].startswith("-"):
         return bump(argv[0])
     sys.stderr.write(__doc__ or "")

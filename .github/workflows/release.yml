@@ -1,39 +1,68 @@
 name: Release
 
-# Pushing a tag like v0.1.0 publishes a GitHub release with dometic_ddm.zip attached.
-# HACS reads `version` from manifest.json and, because hacs.json sets zip_release, downloads
-# the zip from the release instead of the repository tree.
+# Every push to main is a release candidate: if manifest.json carries a version that has no
+# release yet, this workflow runs the full checks, tags the commit v<version> and publishes a
+# GitHub release with dometic_ddm.zip attached (HACS downloads that zip, see hacs.json).
+# Pushes that do not change the version do nothing here.
 #
-#   scripts/release.py 0.1.0     # bumps manifest.json, commits, tags v0.1.0
-#   git push && git push --tags  # this workflow does the rest
+#   scripts/release.py 0.2.0   # bumps manifest.json and commits
+#   git push                   # → release v0.2.0
 
 on:
   push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+*"
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version and decide
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(python3 -c 'import json;print(json.load(open("custom_components/dometic_ddm/manifest.json"))["version"])')
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "${TAG} already released; nothing to do"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "${TAG} is new; releasing"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+          case "${VERSION}" in
+            0.*|*-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+            *)       echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+          esac
 
       - uses: astral-sh/setup-uv@v5
+        if: steps.version.outputs.release == 'true'
         with:
           enable-cache: true
       - run: uv python install 3.14
+        if: steps.version.outputs.release == 'true'
       - run: uv sync --group dev
-
-      - name: Check tag matches manifest version
-        run: uv run python scripts/release.py --check "${GITHUB_REF_NAME}"
+        if: steps.version.outputs.release == 'true'
 
       - name: Check vendored pyddm is current
+        if: steps.version.outputs.release == 'true'
         run: uv run python scripts/sync_vendored.py --check
 
       - name: Lint, type-check, test
+        if: steps.version.outputs.release == 'true'
         run: |
           uv run ruff check .
           uv run ruff format --check .
@@ -41,12 +70,14 @@ jobs:
           uv run pytest -q
 
       - name: HACS validation
+        if: steps.version.outputs.release == 'true'
         uses: hacs/action@main
         with:
           category: integration
           ignore: brands
 
       - name: Build dometic_ddm.zip
+        if: steps.version.outputs.release == 'true'
         run: |
           cd custom_components/dometic_ddm
           find . -name __pycache__ -type d -prune -exec rm -rf {} +
@@ -54,9 +85,13 @@ jobs:
           cd ../..
           unzip -l dometic_ddm.zip | head -20
 
-      - name: Publish GitHub release
+      - name: Tag and publish GitHub release
+        if: steps.version.outputs.release == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.version.outputs.tag }}
           files: dometic_ddm.zip
           generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, '-') || startsWith(github.ref_name, 'v0.') }}
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}
