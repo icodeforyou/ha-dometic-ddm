@@ -91,6 +91,21 @@ uv run mypy                  # strict, pyddm only
 uv run pytest -q
 ```
 
+## Releasing
+
+HACS installs from GitHub releases. `hacs.json` sets `zip_release`, so each release must
+carry `dometic_ddm.zip`; the `Release` workflow builds and attaches it when a `v*` tag is
+pushed, after re-running lint, mypy, tests and HACS validation.
+
+```sh
+python scripts/release.py 0.2.0   # bumps manifest.json, commits, tags v0.2.0
+git push && git push --tags
+```
+
+The workflow refuses tags that do not match `manifest.json` and releases whose vendored
+`pyddm` copy is stale. Tags below `v1.0.0` or with a suffix (`-beta.1`) are marked
+pre-release.
+
 ## Prior art
 
 - [philippe-a11y/home-assistant-dometic-cfx](https://github.com/philippe-a11y/home-assistant-dometic-cfx): BLE, DDM1 + DDM2 for CFX; CFX5 verified on hardware.
