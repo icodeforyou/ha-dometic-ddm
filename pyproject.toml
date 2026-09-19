@@ -28,8 +28,8 @@ dependencies = []
 ble = ["bleak>=0.22"]
 
 [project.urls]
-Homepage = "https://github.com/johanthorstedt/ha-dometic-ddm"
-Documentation = "https://github.com/johanthorstedt/ha-dometic-ddm/tree/main/docs"
+Homepage = "https://github.com/icodeforyou/ha-dometic-ddm"
+Documentation = "https://github.com/icodeforyou/ha-dometic-ddm/tree/main/docs"
 
 [dependency-groups]
 dev = [

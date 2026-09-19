@@ -1,0 +1,31 @@
+{
+  "domain": "dometic_ddm",
+  "name": "Dometic DDM (CFX3, FreshJet)",
+  "bluetooth": [
+    {
+      "service_uuid": "537a0300-0995-481f-926c-1604e23fd515",
+      "connectable": true
+    },
+    {
+      "service_uuid": "537a0400-0995-481f-926c-1604e23fd515",
+      "connectable": true
+    },
+    {
+      "local_name": "CFX3*",
+      "connectable": true
+    },
+    {
+      "manufacturer_id": 2117,
+      "connectable": true
+    }
+  ],
+  "codeowners": ["@icodeforyou"],
+  "config_flow": true,
+  "dependencies": ["bluetooth_adapters"],
+  "documentation": "https://github.com/icodeforyou/ha-dometic-ddm",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/icodeforyou/ha-dometic-ddm/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

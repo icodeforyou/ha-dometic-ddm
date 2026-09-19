@@ -30,6 +30,58 @@ this integration talks BLE through Home Assistant's Bluetooth stack. The `pyddm`
 knows nothing about Home Assistant or Bluetooth libraries beyond an abstract transport, so
 the protocol can be unit-tested with captured byte sequences.
 
+```
+custom_components/dometic_ddm/   HA integration (config flow, coordinator, entities)
+  pyddm/                         vendored copy of ../../pyddm (HACS only ships this folder)
+pyddm/                           the protocol package, source of truth for the copy
+  const.py                       UUIDs, company id, advertisement → protocol classification
+  frame.py                       [action][topic4][value] encode/decode, action enums
+  ddm1.py / ddm2.py              codecs + parameter tables (JSON bundled under pyddm/data)
+  session.py                     sans-I/O ProtocolMachine + asyncio Session
+  transport/                     abstract Transport, bleak BLE, base64-line TCP (untested)
+```
+
+Keep the vendored copy current with `python scripts/sync_vendored.py`; a test fails if it
+is stale. Once `pyddm` is on PyPI the copy goes away and `manifest.json` lists it under
+`requirements`.
+
+## What works (in tests) and what is guessed
+
+**CFX3 (DDM1).** Config flow via Bluetooth discovery (local name `CFX3*` or service
+`537a0300-…`), a coordinator that connects with `bleak-retry-connector`, runs the handshake
+`04 → 03 → 04`, subscribes to individual topics and ACKs every PUBLISH. Entities for
+compartment 0 only: climate (target temperature, on/off), temperature and battery voltage
+sensors, door and compressor binary sensors, battery protection select. Dual-zone (`c1…`)
+entities are not created yet.
+
+**FreshJet FJZ7 (DDM2).** Discovered (manufacturer id `0x0845` or service `537a0400-…`) and
+connected in *probe mode*: it subscribes to a handful of gateway and AC topics and logs
+every value it receives at INFO level. No entities. The point is to answer open question 1
+(is the AC class reachable over BLE at all?) the first time a real unit is in range.
+
+Things the code assumes but nobody has seen on a device yet, all marked
+*needs verification* in comments:
+
+- the DDM1 handshake order and that every PUBLISH must be ACKed (from app code);
+- that a CFX3 needs a BLE bond; the integration asks `bleak-retry-connector` to pair on
+  DDM1 connections and whether that survives an HA restart through an ESPHome proxy;
+- the meaning of the bulk-subscription topic `01 00 00 81` (not used by default);
+- DDM2 handshake: default is *none* (the hardware-verified CFX5 implementation does not
+  do one), the HELLO/ACK variant exists as `DDM2_HANDSHAKE_LIKE_DDM1`;
+- the DDM2 STRUCT byte layout, interpreted from the dictionary's `struct` field;
+- enum names for DDM1 battery protection / power source (lifted from the DDM2 dictionary);
+- the local WiFi TCP transport (base64 lines, `\r`), including its port, which the app
+  source does not name.
+
+## Hardware bring-up plan
+
+1. Flash `esphome/xiao-esp32c3-proxy.yaml` (stock ESPHome, `bluetooth_proxy: active: true`).
+2. Put the CFX3 in pairing mode, add the integration from HA's discovered-devices list.
+3. Read the debug log (`custom_components.dometic_ddm` and `pyddm` at DEBUG): every frame
+   is hex-dumped as `TX`/`RX`, unknown frames are logged and ignored, never acted on.
+4. Compare the decoded compartment temperature against the cooler's display before
+   trusting any write.
+
 ## Development
 
 ```sh

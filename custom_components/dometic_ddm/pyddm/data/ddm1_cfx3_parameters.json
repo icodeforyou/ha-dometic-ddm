@@ -1,0 +1,970 @@
+{
+ "productInformation": {
+  "productModelNumber": {
+   "topic_bytes": [
+    0,
+    192,
+    0,
+    0
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "productSerialNumber": {
+   "topic_bytes": [
+    0,
+    193,
+    0,
+    0
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "productType": {
+   "topic_bytes": [
+    0,
+    196,
+    0,
+    0
+   ],
+   "type": "INT8_NUMBER",
+   "unit": "enum",
+   "writable": 1
+  },
+  "productHingePosition": {
+   "topic_bytes": [
+    0,
+    197,
+    0,
+    0
+   ],
+   "type": "INT8_NUMBER",
+   "unit": "enum",
+   "writable": 1
+  }
+ },
+ "factoryReset": {
+  "factoryReset": {
+   "topic_bytes": [
+    0,
+    0,
+    1,
+    0
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  }
+ },
+ "compartment": {
+  "c0Power": {
+   "topic_bytes": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c1Power": {
+   "topic_bytes": [
+    16,
+    0,
+    1,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c0MeasuredTemperature": {
+   "topic_bytes": [
+    0,
+    1,
+    1,
+    1
+   ],
+   "type": "INT16_DECIDEGREE_CELSIUS",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1MeasuredTemperature": {
+   "topic_bytes": [
+    16,
+    1,
+    1,
+    1
+   ],
+   "type": "INT16_DECIDEGREE_CELSIUS",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c0SetTemperature": {
+   "topic_bytes": [
+    0,
+    2,
+    1,
+    1
+   ],
+   "type": "INT16_DECIDEGREE_CELSIUS",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1SetTemperature": {
+   "topic_bytes": [
+    16,
+    2,
+    1,
+    1
+   ],
+   "type": "INT16_DECIDEGREE_CELSIUS",
+   "unit": "^C",
+   "writable": 1
+  },
+  "activeCompartment": {
+   "topic_bytes": [
+    0,
+    4,
+    1,
+    1
+   ],
+   "type": "INT8_NUMBER",
+   "unit": "enum",
+   "writable": 1
+  },
+  "c0DoorOpen": {
+   "topic_bytes": [
+    0,
+    8,
+    1,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c1DoorOpen": {
+   "topic_bytes": [
+    16,
+    8,
+    1,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c0TemperatureHistoryHour": {
+   "topic_bytes": [
+    0,
+    64,
+    1,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1TemperatureHistoryHour": {
+   "topic_bytes": [
+    16,
+    64,
+    1,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c0TemperatureHistoryDay": {
+   "topic_bytes": [
+    0,
+    65,
+    1,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1TemperatureHistoryDay": {
+   "topic_bytes": [
+    16,
+    65,
+    1,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c0TemperatureHistoryWeek": {
+   "topic_bytes": [
+    0,
+    66,
+    1,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1TemperatureHistoryWeek": {
+   "topic_bytes": [
+    16,
+    66,
+    1,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c0TemperatureRange": {
+   "topic_bytes": [
+    0,
+    128,
+    1,
+    1
+   ],
+   "type": "INT16_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1TemperatureRange": {
+   "topic_bytes": [
+    16,
+    128,
+    1,
+    1
+   ],
+   "type": "INT16_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c0RecommendedRange": {
+   "topic_bytes": [
+    0,
+    129,
+    1,
+    1
+   ],
+   "type": "INT16_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1RecommendedRange": {
+   "topic_bytes": [
+    16,
+    129,
+    1,
+    1
+   ],
+   "type": "INT16_ARRAY",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c0TemperatureOffset": {
+   "topic_bytes": [
+    0,
+    130,
+    1,
+    1
+   ],
+   "type": "INT16_DECIDEGREE_CELSIUS",
+   "unit": "^C",
+   "writable": 1
+  },
+  "c1TemperatureOffset": {
+   "topic_bytes": [
+    16,
+    130,
+    1,
+    1
+   ],
+   "type": "INT16_DECIDEGREE_CELSIUS",
+   "unit": "^C",
+   "writable": 1
+  }
+ },
+ "presentation": {
+  "presentedTemperatureUnit": {
+   "topic_bytes": [
+    0,
+    0,
+    2,
+    1
+   ],
+   "type": "INT8_NUMBER",
+   "unit": "enum",
+   "writable": 1
+  }
+ },
+ "power": {
+  "coolerPower": {
+   "topic_bytes": [
+    0,
+    0,
+    3,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "batteryVoltageLevel": {
+   "topic_bytes": [
+    0,
+    1,
+    3,
+    1
+   ],
+   "type": "INT16_DECICURRENT_VOLT",
+   "unit": "-",
+   "writable": 1
+  },
+  "batteryProtectionLevel": {
+   "topic_bytes": [
+    0,
+    2,
+    3,
+    1
+   ],
+   "type": "INT8_NUMBER",
+   "unit": "enum",
+   "writable": 1
+  },
+  "compressorPower": {
+   "topic_bytes": [
+    0,
+    3,
+    3,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "dcCurrentLevel": {
+   "topic_bytes": [
+    0,
+    4,
+    3,
+    1
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  },
+  "powerSource": {
+   "topic_bytes": [
+    0,
+    5,
+    3,
+    1
+   ],
+   "type": "INT8_NUMBER",
+   "unit": "enum",
+   "writable": 1
+  },
+  "icemakerPower": {
+   "topic_bytes": [
+    0,
+    6,
+    3,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "dcCurrentHistoryHour": {
+   "topic_bytes": [
+    0,
+    64,
+    3,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "-",
+   "writable": 1
+  },
+  "dcCurrentHistoryDay": {
+   "topic_bytes": [
+    0,
+    65,
+    3,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "-",
+   "writable": 1
+  },
+  "dcCurrentHistoryWeek": {
+   "topic_bytes": [
+    0,
+    66,
+    3,
+    1
+   ],
+   "type": "HISTORY_DATA_ARRAY",
+   "unit": "-",
+   "writable": 1
+  }
+ },
+ "errors": {
+  "c0NtcOpenError": {
+   "topic_bytes": [
+    0,
+    1,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c1NtcOpenError": {
+   "topic_bytes": [
+    0,
+    17,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c0NtcShortError": {
+   "topic_bytes": [
+    0,
+    2,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "c1NtcShortError": {
+   "topic_bytes": [
+    0,
+    18,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "connectionError": {
+   "topic_bytes": [
+    0,
+    3,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "solenoidValveError": {
+   "topic_bytes": [
+    0,
+    9,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "fanOvercurrentError": {
+   "topic_bytes": [
+    0,
+    50,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "compressorStartFailError": {
+   "topic_bytes": [
+    0,
+    51,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "compressorSpeedError": {
+   "topic_bytes": [
+    0,
+    52,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "controllerOvertempError": {
+   "topic_bytes": [
+    0,
+    53,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "innerFanError": {
+   "topic_bytes": [
+    0,
+    20,
+    4,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  }
+ },
+ "alerts": {
+  "temperatureAlertCc": {
+   "topic_bytes": [
+    0,
+    0,
+    5,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "doorAlert": {
+   "topic_bytes": [
+    0,
+    1,
+    5,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "voltageAlert": {
+   "topic_bytes": [
+    0,
+    2,
+    5,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "temperatureAlertDcm": {
+   "topic_bytes": [
+    0,
+    3,
+    5,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  }
+ },
+ "communication": {
+  "deviceName": {
+   "topic_bytes": [
+    0,
+    0,
+    6,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "wifiEnabled": {
+   "topic_bytes": [
+    0,
+    1,
+    6,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "wifiConnected": {
+   "topic_bytes": [
+    0,
+    2,
+    6,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "bluetoothEnabled": {
+   "topic_bytes": [
+    0,
+    3,
+    6,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "bluetoothConnected": {
+   "topic_bytes": [
+    0,
+    4,
+    6,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "resetWifi": {
+   "topic_bytes": [
+    0,
+    5,
+    6,
+    1
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  },
+  "resetBluetooth": {
+   "topic_bytes": [
+    0,
+    6,
+    6,
+    1
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  },
+  "bluetoothBondMode": {
+   "topic_bytes": [
+    0,
+    7,
+    6,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "wifiApConnected": {
+   "topic_bytes": [
+    0,
+    8,
+    6,
+    1
+   ],
+   "type": "INT8_BOOLEAN",
+   "unit": "bool",
+   "writable": 1
+  },
+  "overTheAirUpdate0": {
+   "topic_bytes": [
+    0,
+    64,
+    6,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "overTheAirUpdate1": {
+   "topic_bytes": [
+    1,
+    64,
+    6,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "overTheAirUpdate2": {
+   "topic_bytes": [
+    2,
+    64,
+    6,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  }
+ },
+ "wiFiSettings": {
+  "stationSsid0": {
+   "topic_bytes": [
+    0,
+    0,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationSsid1": {
+   "topic_bytes": [
+    1,
+    0,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationSsid2": {
+   "topic_bytes": [
+    2,
+    0,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationPassword0": {
+   "topic_bytes": [
+    0,
+    1,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationPassword1": {
+   "topic_bytes": [
+    1,
+    1,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationPassword2": {
+   "topic_bytes": [
+    2,
+    1,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationPassword3": {
+   "topic_bytes": [
+    3,
+    1,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "stationPassword4": {
+   "topic_bytes": [
+    4,
+    1,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "cfxDirectPassword0": {
+   "topic_bytes": [
+    0,
+    2,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "cfxDirectPassword1": {
+   "topic_bytes": [
+    1,
+    2,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "cfxDirectPassword2": {
+   "topic_bytes": [
+    2,
+    2,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "cfxDirectPassword3": {
+   "topic_bytes": [
+    3,
+    2,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "cfxDirectPassword4": {
+   "topic_bytes": [
+    4,
+    2,
+    7,
+    1
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  }
+ },
+ "deviceSpecific": {
+  "ccSerialNumber": {
+   "topic_bytes": [
+    0,
+    192,
+    0,
+    128
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "hmiSerialNumber": {
+   "topic_bytes": [
+    16,
+    192,
+    0,
+    128
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "ccFirmwareVersion": {
+   "topic_bytes": [
+    0,
+    193,
+    0,
+    128
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "hmiFirmwareVersion": {
+   "topic_bytes": [
+    16,
+    193,
+    0,
+    128
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  },
+  "dcmFirmwareVersion": {
+   "topic_bytes": [
+    32,
+    193,
+    0,
+    128
+   ],
+   "type": "UTF8_STRING",
+   "unit": "-",
+   "writable": 1
+  }
+ },
+ "multiSubscriptionParameters": {
+  "appConnectParameters": {
+   "topic_bytes": [
+    null,
+    0,
+    0,
+    129
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  },
+  "subscribeAppSz": {
+   "topic_bytes": [
+    1,
+    0,
+    0,
+    129
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  },
+  "subscribeAppSzi": {
+   "topic_bytes": [
+    2,
+    0,
+    0,
+    129
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  },
+  "subscribeAppDz": {
+   "topic_bytes": [
+    3,
+    0,
+    0,
+    129
+   ],
+   "type": "EMPTY",
+   "unit": "-",
+   "writable": 1
+  }
+ }
+}
