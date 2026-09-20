@@ -89,6 +89,9 @@ class HandshakeConfig:
     """Answer every incoming PUBLISH with a single ACK byte."""
     initial: tuple[bytes, ...] = ()
     """Frames sent immediately at :meth:`ProtocolMachine.start` (e.g. a PING nudge)."""
+    ack_pings: bool = False
+    """Answer a PING from the device with ACK. A CFX3 pings every ~2 s once the session is
+    up (observed 2026-09-20); the app answers ACK, like it does for PUBLISH."""
 
 
 DDM1_HANDSHAKE = HandshakeConfig(
@@ -97,6 +100,7 @@ DDM1_HANDSHAKE = HandshakeConfig(
         HandshakeStep(expect=DDM1Action.ACK),
     ),
     ack_publishes=True,
+    ack_pings=True,
 )
 DDM1_HANDSHAKE_WITH_PING = replace(
     DDM1_HANDSHAKE, initial=(Frame.control(DDM1Action.PING).encode(),)
@@ -316,7 +320,14 @@ class ProtocolMachine:
                 self.state = SessionState.READY
                 events.append(Ready())
             return events
-        return [Control(frame.action)]
+        ready_events: list[Event] = [Control(frame.action)]
+        if (
+            self.handshake.ack_pings
+            and self.protocol is Protocol.DDM1
+            and frame.action == DDM1Action.PING
+        ):
+            ready_events.append(Send(Frame.control(DDM1Action.ACK).encode()))
+        return ready_events
 
     def _on_publish(self, frame: Frame) -> list[Event]:
         assert frame.topic is not None

@@ -52,8 +52,8 @@ single action byte. No length, no CRC.
 | Topic layout | `[instance, param, class, group]` | `[param, instance, class, group]` |
 | Values | 1–2 byte LE, °C·10 (int16), V·10 | int32 LE, ×1000 for °C/V/A/W |
 
-Handshake (DDM1, from app code): device sends `04` → we send `03` → device `04` → subscribe.
-Every PUBLISH we receive is answered with `04`. The app bonds (Android) and requests MTU 153.
+Handshake (DDM1, **verified**): we send `02` (PING) → device `04` → we `03` → device `04` →
+subscribe. Every PUBLISH *and every PING* we receive is answered with `04`. The app bonds (Android) and requests MTU 153.
 Device identification at scan: local name starting `CFX3` → DDM1; manufacturer data with
 company id `0x0845` → DDM2.
 
@@ -74,12 +74,30 @@ laptop's BlueZ adapter: scan, connect, subscribe, hex frame log, gated writes. U
 every protocol experiment before touching the integration; save frame logs under
 `docs/captures/`. It must keep using pyddm's Session/codecs, never its own byte handling.
 
+## Verified on hardware (2026-09-20, laptop BlueZ, captures in docs/captures/)
+
+- **Bonding is mandatory** for both devices. Pairing only succeeds while the device is in
+  its pairing mode (FreshJet: button combination on the unit; CFX3: Bluetooth pairing menu).
+  Unbonded centrals are dropped within ~1–4 s. Use `bluetoothctl` (has an agent) to bond.
+- **FJZ7 (DDM2)**: no handshake; SUBSCRIBE → PUBLISH immediately; SET confirmed by PUBLISH;
+  `ac` class reachable over BLE (open question 1: yes); state pushed on change and on remote
+  use; Turbo mode refused; `etemp/eco/flaps` never answer; `pwr` looks 10× too small.
+- **CFX3 (DDM1)**: **client opens with PING** `02` → `04` → `03` → `04` (docs had the order
+  wrong). Cooler PINGs every 2 s and **publishes nothing until each PING is ACKed** (pyddm
+  does this by default now). Individual SUBSCRIBEs then answer immediately; bulk topics
+  `01/02/03 00 00 81` work too (open question 3: yes). Cooler is silent for ~1 min after a
+  disconnect before advertising again; bleak must be given BlueZ's device object, not a
+  string address, or connects time out.
+
 ## Open questions (do not silently assume)
 
-1. Does FJZ7 expose the `ac` class (class 2, group 1) over BLE, or only over WiFi/cloud?
+1. ~~Does FJZ7 expose the `ac` class over BLE?~~ Yes.
 2. Does bonding survive HA restart when going through an ESPHome bluetooth proxy?
-3. Is topic `01 00 00 81` (DDM1 "subscribeAppSz") really a bulk subscription?
-4. Exact DDM2 handshake (HELLO/ACK) — assumed same as DDM1, unverified.
+3. ~~Is `01 00 00 81` a bulk subscription?~~ Yes (Sz); `02`/`03` = Szi/Dz variants.
+4. ~~Exact DDM2 handshake?~~ None needed.
+5. `ac.pwr` scaling (factor 1000 gives ~29 W at 1.6 A; probably 100). Check with a meter.
+6. `ac.fspd` level meaning (0/2/5 observed) and whether `ac.dmr` really dims the light.
+7. HISTORY_DATA_ARRAY: `0x8000` = no sample (decode as None), trailer byte = counter.
 
 ## Prior art (don't reinvent, do read)
 

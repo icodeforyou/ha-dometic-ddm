@@ -1,0 +1,692 @@
+# CFX3 (CFX335, FC:E8:C0:A9:0B:FA) first sessions, 2026-09-20 12:17-12:39, laptop on top of the cooler.
+# Bonded via bluetoothctl while the cooler was in its Bluetooth pairing menu. Link opened with
+# `bluetoothctl connect`, console attached (bleak reused the link), handshake PING-first.
+# TX = console → cooler, RX = cooler → console. Hex exactly as on GATT; text = pyddm decoding.
+# WiFi SSID payload redacted (topic 00 00 07 01).
+
+12:17:10,578  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:17:15,948  --  Link up (MTU 23; BlueZ reports 23 until the first write)
+12:17:15,948  --  Enabling notifications
+12:17:31,093  --  No handshake completion within 15s. The device did not send the expected ACK. Try 'Send PING', another handshake variant, or check bonding.
+12:17:50,225  TX  02                                               PING
+12:17:50,291  RX  04                                               ACK
+12:17:50,292  TX  03                                               HELLO
+12:17:50,366  RX  04                                               ACK
+12:17:50,366  --  Handshake complete, session READY
+12:18:05,366  --  BLE link lost
+12:18:05,367  --  Disconnected
+12:18:05,367  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:18:37,355  --  BLE link lost
+12:19:50,913  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:20:24,384  --  BLE link lost
+12:21:32,191  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:22:06,349  --  BLE link lost
+12:23:08,330  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:23:26,079  --  Link up (MTU 23; BlueZ reports 23 until the first write)
+12:23:26,079  --  Enabling notifications
+12:23:26,083  TX  02                                               PING
+12:23:28,139  --  BLE link lost
+12:23:41,085  --  No handshake completion within 15s. The device did not send the expected ACK. Try 'Send PING', another handshake variant, or check bonding.
+12:24:02,371  --  Disconnected
+12:24:02,372  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:24:38,380  --  BLE link lost
+12:24:54,305  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:25:27,394  --  BLE link lost
+12:26:29,096  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:26:32,986  --  BLE link lost
+12:27:03,359  --  BLE link lost
+12:27:13,506  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:27:48,398  --  BLE link lost
+12:27:58,538  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:28:34,374  --  BLE link lost
+12:32:38,864  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:34:03,626  --  Connecting to FC:E8:C0:A9:0B:FA …
+12:35:28,538  --  Connecting to FC:E8:C0:A9:0B:FA via BlueZ object /org/bluez/hci0/dev_FC_E8_C0_A9_0B_FA …
+12:35:28,547  --  Link up (MTU 23; BlueZ reports 23 until the first write)
+12:35:28,547  --  Enabling notifications
+12:35:28,613  TX  02                                               PING
+12:35:28,689  RX  04                                               ACK
+12:35:28,690  TX  03                                               HELLO
+12:35:28,801  RX  04                                               ACK
+12:35:28,801  --  Handshake complete, session READY
+12:35:28,804  --  Subscribing to 14 parameter(s)
+12:35:28,805  TX  01 00 C0 00 00                                   SUBSCRIBE 00 C0 00 00  productInformation.productModelNumber
+12:35:28,877  RX  04                                               ACK
+12:35:28,928  TX  01 00 C1 00 00                                   SUBSCRIBE 00 C1 00 00  productInformation.productSerialNumber
+12:35:28,988  RX  04                                               ACK
+12:35:29,038  TX  01 00 C4 00 00                                   SUBSCRIBE 00 C4 00 00  productInformation.productType
+12:35:29,102  RX  04                                               ACK
+12:35:29,153  TX  01 00 C1 00 80                                   SUBSCRIBE 00 C1 00 80  deviceSpecific.ccFirmwareVersion
+12:35:29,213  RX  04                                               ACK
+12:35:29,263  TX  01 00 00 01 01                                   SUBSCRIBE 00 00 01 01  compartment.c0Power
+12:35:29,327  RX  04                                               ACK
+12:35:29,362  RX  02                                               PING
+12:35:29,377  TX  01 00 01 01 01                                   SUBSCRIBE 00 01 01 01  compartment.c0MeasuredTemperature
+12:35:29,438  RX  04                                               ACK
+12:35:29,489  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:35:29,551  RX  04                                               ACK
+12:35:29,602  TX  01 00 08 01 01                                   SUBSCRIBE 00 08 01 01  compartment.c0DoorOpen
+12:35:29,663  RX  04                                               ACK
+12:35:29,714  TX  01 00 80 01 01                                   SUBSCRIBE 00 80 01 01  compartment.c0TemperatureRange
+12:35:29,776  RX  04                                               ACK
+12:35:29,827  TX  01 00 00 03 01                                   SUBSCRIBE 00 00 03 01  power.coolerPower
+12:35:29,927  RX  04                                               ACK
+12:35:29,978  TX  01 00 01 03 01                                   SUBSCRIBE 00 01 03 01  power.batteryVoltageLevel
+12:35:30,038  RX  04                                               ACK
+12:35:30,089  TX  01 00 02 03 01                                   SUBSCRIBE 00 02 03 01  power.batteryProtectionLevel
+12:35:30,151  RX  04                                               ACK
+12:35:30,202  TX  01 00 03 03 01                                   SUBSCRIBE 00 03 03 01  power.compressorPower
+12:35:30,263  RX  04                                               ACK
+12:35:30,314  TX  01 00 05 03 01                                   SUBSCRIBE 00 05 03 01  power.powerSource
+12:35:30,377  RX  04                                               ACK
+12:35:31,351  RX  02                                               PING
+12:35:33,376  RX  02                                               PING
+12:35:35,401  RX  02                                               PING
+12:35:37,352  RX  02                                               PING
+12:35:39,376  RX  02                                               PING
+12:35:41,439  RX  02                                               PING
+12:35:43,351  RX  02                                               PING
+12:35:45,376  RX  02                                               PING
+12:35:47,364  RX  02                                               PING
+12:35:49,426  RX  02                                               PING
+12:35:51,376  RX  02                                               PING
+12:35:53,402  RX  02                                               PING
+12:35:55,352  RX  02                                               PING
+12:35:57,414  RX  02                                               PING
+12:35:59,364  RX  02                                               PING
+12:36:01,352  RX  02                                               PING
+12:36:03,414  RX  02                                               PING
+12:36:05,402  RX  02                                               PING
+12:36:07,352  RX  02                                               PING
+12:36:09,378  RX  02                                               PING
+12:36:11,440  RX  02                                               PING
+12:36:13,390  RX  02                                               PING
+12:36:15,377  RX  02                                               PING
+12:36:17,366  RX  02                                               PING
+12:36:19,354  RX  02                                               PING
+12:36:21,377  RX  02                                               PING
+12:36:23,403  RX  02                                               PING
+12:36:25,352  RX  02                                               PING
+12:36:25,714  --  Subscribing to 14 parameter(s)
+12:36:25,714  TX  01 00 C0 00 00                                   SUBSCRIBE 00 C0 00 00  productInformation.productModelNumber
+12:36:25,877  RX  04                                               ACK
+12:36:25,928  TX  01 00 C1 00 00                                   SUBSCRIBE 00 C1 00 00  productInformation.productSerialNumber
+12:36:25,990  RX  04                                               ACK
+12:36:26,041  TX  01 00 C4 00 00                                   SUBSCRIBE 00 C4 00 00  productInformation.productType
+12:36:26,102  RX  04                                               ACK
+12:36:26,153  TX  01 00 C1 00 80                                   SUBSCRIBE 00 C1 00 80  deviceSpecific.ccFirmwareVersion
+12:36:26,290  RX  04                                               ACK
+12:36:26,341  TX  01 00 00 01 01                                   SUBSCRIBE 00 00 01 01  compartment.c0Power
+12:36:26,402  RX  04                                               ACK
+12:36:26,453  TX  01 00 01 01 01                                   SUBSCRIBE 00 01 01 01  compartment.c0MeasuredTemperature
+12:36:26,590  RX  04                                               ACK
+12:36:26,641  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:36:26,778  RX  04                                               ACK
+12:36:26,791  TX  01 00 08 01 01                                   SUBSCRIBE 00 08 01 01  compartment.c0DoorOpen
+12:36:26,852  RX  04                                               ACK
+12:36:26,903  TX  01 00 80 01 01                                   SUBSCRIBE 00 80 01 01  compartment.c0TemperatureRange
+12:36:27,115  RX  04                                               ACK
+12:36:27,166  TX  01 00 00 03 01                                   SUBSCRIBE 00 00 03 01  power.coolerPower
+12:36:27,228  RX  04                                               ACK
+12:36:27,279  TX  01 00 01 03 01                                   SUBSCRIBE 00 01 03 01  power.batteryVoltageLevel
+12:36:27,340  RX  04                                               ACK
+12:36:27,378  RX  02                                               PING
+12:36:27,391  TX  01 00 02 03 01                                   SUBSCRIBE 00 02 03 01  power.batteryProtectionLevel
+12:36:27,490  RX  04                                               ACK
+12:36:27,541  TX  01 00 03 03 01                                   SUBSCRIBE 00 03 03 01  power.compressorPower
+12:36:27,690  TX  01 00 05 03 01                                   SUBSCRIBE 00 05 03 01  power.powerSource
+12:36:27,715  RX  04                                               ACK
+12:36:27,828  RX  04                                               ACK
+12:36:29,205  --  Subscribing to 14 parameter(s)
+12:36:29,205  TX  01 00 C0 00 00                                   SUBSCRIBE 00 C0 00 00  productInformation.productModelNumber
+12:36:29,290  RX  04                                               ACK
+12:36:29,341  TX  01 00 C1 00 00                                   SUBSCRIBE 00 C1 00 00  productInformation.productSerialNumber
+12:36:29,365  RX  02                                               PING
+12:36:29,440  RX  04                                               ACK
+12:36:29,491  TX  01 00 C4 00 00                                   SUBSCRIBE 00 C4 00 00  productInformation.productType
+12:36:29,526  --  Subscribing to 14 parameter(s)
+12:36:29,665  RX  04                                               ACK
+12:36:29,665  TX  01 00 C0 00 00                                   SUBSCRIBE 00 C0 00 00  productInformation.productModelNumber
+12:36:29,740  RX  04                                               ACK
+12:36:29,741  TX  01 00 C1 00 80                                   SUBSCRIBE 00 C1 00 80  deviceSpecific.ccFirmwareVersion
+12:36:29,853  RX  04                                               ACK
+12:36:29,854  TX  01 00 C1 00 00                                   SUBSCRIBE 00 C1 00 00  productInformation.productSerialNumber
+12:36:29,928  RX  04                                               ACK
+12:36:29,929  TX  01 00 00 01 01                                   SUBSCRIBE 00 00 01 01  compartment.c0Power
+12:36:30,078  RX  04                                               ACK
+12:36:30,079  TX  01 00 C4 00 00                                   SUBSCRIBE 00 C4 00 00  productInformation.productType
+12:36:30,190  RX  04                                               ACK
+12:36:30,190  TX  01 00 01 01 01                                   SUBSCRIBE 00 01 01 01  compartment.c0MeasuredTemperature
+12:36:30,303  RX  04                                               ACK
+12:36:30,304  TX  01 00 C1 00 80                                   SUBSCRIBE 00 C1 00 80  deviceSpecific.ccFirmwareVersion
+12:36:30,490  RX  04                                               ACK
+12:36:30,491  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:36:30,565  RX  04                                               ACK
+12:36:30,566  TX  01 00 00 01 01                                   SUBSCRIBE 00 00 01 01  compartment.c0Power
+12:36:30,640  RX  04                                               ACK
+12:36:30,641  TX  01 00 08 01 01                                   SUBSCRIBE 00 08 01 01  compartment.c0DoorOpen
+12:36:30,753  RX  04                                               ACK
+12:36:30,754  TX  01 00 01 01 01                                   SUBSCRIBE 00 01 01 01  compartment.c0MeasuredTemperature
+12:36:30,828  RX  04                                               ACK
+12:36:30,828  TX  01 00 80 01 01                                   SUBSCRIBE 00 80 01 01  compartment.c0TemperatureRange
+12:36:30,903  RX  04                                               ACK
+12:36:30,904  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:36:31,015  RX  04                                               ACK
+12:36:31,016  TX  01 00 00 03 01                                   SUBSCRIBE 00 00 03 01  power.coolerPower
+12:36:31,090  RX  04                                               ACK
+12:36:31,091  TX  01 00 08 01 01                                   SUBSCRIBE 00 08 01 01  compartment.c0DoorOpen
+12:36:31,203  RX  04                                               ACK
+12:36:31,204  TX  01 00 01 03 01                                   SUBSCRIBE 00 01 03 01  power.batteryVoltageLevel
+12:36:31,278  RX  04                                               ACK
+12:36:31,279  TX  01 00 80 01 01                                   SUBSCRIBE 00 80 01 01  compartment.c0TemperatureRange
+12:36:31,353  RX  04                                               ACK
+12:36:31,354  RX  02                                               PING
+12:36:31,354  TX  01 00 02 03 01                                   SUBSCRIBE 00 02 03 01  power.batteryProtectionLevel
+12:36:31,428  RX  04                                               ACK
+12:36:31,428  TX  01 00 00 03 01                                   SUBSCRIBE 00 00 03 01  power.coolerPower
+12:36:31,503  RX  04                                               ACK
+12:36:31,504  TX  01 00 03 03 01                                   SUBSCRIBE 00 03 03 01  power.compressorPower
+12:36:31,578  RX  04                                               ACK
+12:36:31,578  TX  01 00 01 03 01                                   SUBSCRIBE 00 01 03 01  power.batteryVoltageLevel
+12:36:31,653  RX  04                                               ACK
+12:36:31,654  TX  01 00 05 03 01                                   SUBSCRIBE 00 05 03 01  power.powerSource
+12:36:31,728  RX  04                                               ACK
+12:36:31,729  TX  01 00 02 03 01                                   SUBSCRIBE 00 02 03 01  power.batteryProtectionLevel
+12:36:31,803  RX  04                                               ACK
+12:36:31,854  TX  01 00 03 03 01                                   SUBSCRIBE 00 03 03 01  power.compressorPower
+12:36:31,917  RX  04                                               ACK
+12:36:31,968  TX  01 00 05 03 01                                   SUBSCRIBE 00 05 03 01  power.powerSource
+12:36:32,029  RX  04                                               ACK
+12:36:33,415  RX  02                                               PING
+12:36:35,403  RX  02                                               PING
+12:36:37,353  RX  02                                               PING
+12:36:39,378  RX  02                                               PING
+12:36:41,403  RX  02                                               PING
+12:36:43,391  RX  02                                               PING
+12:36:45,416  RX  02                                               PING
+12:36:47,366  RX  02                                               PING
+12:36:49,428  RX  02                                               PING
+12:36:51,378  RX  02                                               PING
+12:36:53,403  RX  02                                               PING
+12:36:55,353  RX  02                                               PING
+12:36:57,416  RX  02                                               PING
+12:36:59,366  RX  02                                               PING
+12:37:01,391  RX  02                                               PING
+12:37:03,379  RX  02                                               PING
+12:37:05,404  RX  02                                               PING
+12:37:07,354  RX  02                                               PING
+12:37:09,379  RX  02                                               PING
+12:37:11,442  RX  02                                               PING
+12:37:13,392  RX  02                                               PING
+12:37:15,379  RX  02                                               PING
+12:37:17,368  RX  02                                               PING
+12:37:19,392  RX  02                                               PING
+12:38:04,269  --  Connecting to FC:E8:C0:A9:0B:FA via BlueZ object /org/bluez/hci0/dev_FC_E8_C0_A9_0B_FA …
+12:38:04,277  --  Link up (MTU 23; BlueZ reports 23 until the first write)
+12:38:04,277  --  Enabling notifications
+12:38:04,468  TX  02                                               PING
+12:38:04,544  RX  04                                               ACK
+12:38:04,544  TX  03                                               HELLO
+12:38:04,657  RX  04                                               ACK
+12:38:04,657  --  Handshake complete, session READY
+12:38:04,659  --  Subscribing to 14 parameter(s)
+12:38:04,661  TX  01 00 C0 00 00                                   SUBSCRIBE 00 C0 00 00  productInformation.productModelNumber
+12:38:04,730  RX  04                                               ACK
+12:38:04,781  TX  01 00 C1 00 00                                   SUBSCRIBE 00 C1 00 00  productInformation.productSerialNumber
+12:38:04,843  RX  04                                               ACK
+12:38:04,893  TX  01 00 C4 00 00                                   SUBSCRIBE 00 C4 00 00  productInformation.productType
+12:38:04,956  RX  04                                               ACK
+12:38:05,007  TX  01 00 C1 00 80                                   SUBSCRIBE 00 C1 00 80  deviceSpecific.ccFirmwareVersion
+12:38:05,106  RX  04                                               ACK
+12:38:05,156  TX  01 00 00 01 01                                   SUBSCRIBE 00 00 01 01  compartment.c0Power
+12:38:05,218  RX  04                                               ACK
+12:38:05,269  TX  01 00 01 01 01                                   SUBSCRIBE 00 01 01 01  compartment.c0MeasuredTemperature
+12:38:05,331  RX  04                                               ACK
+12:38:05,382  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:38:05,407  RX  02                                               PING
+12:38:05,518  RX  04                                               ACK
+12:38:05,519  TX  04                                               ACK
+12:38:05,632  RX  00 00 C4 00 00 01                                PUBLISH 00 C4 00 00 = 01  productInformation.productType = 1
+12:38:05,633  TX  01 00 08 01 01                                   SUBSCRIBE 00 08 01 01  compartment.c0DoorOpen
+12:38:05,781  RX  04                                               ACK
+12:38:05,781  TX  04                                               ACK
+12:38:05,931  RX  00 00 C1 00 80 56 33 2E 35 31 30 2B 44 44 32 2E 32 00 PUBLISH 00 C1 00 80 = 56 33 2E 35 31 30 2B 44 44 32 2E 32 00  deviceSpecific.ccFirmwareVersion = V3.510+DD2.2
+12:38:05,932  TX  01 00 80 01 01                                   SUBSCRIBE 00 80 01 01  compartment.c0TemperatureRange
+12:38:06,006  RX  04                                               ACK
+12:38:06,007  TX  04                                               ACK
+12:38:06,081  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:06,082  TX  01 00 00 03 01                                   SUBSCRIBE 00 00 03 01  power.coolerPower
+12:38:06,231  RX  04                                               ACK
+12:38:06,232  TX  04                                               ACK
+12:38:06,343  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:06,343  TX  01 00 01 03 01                                   SUBSCRIBE 00 01 03 01  power.batteryVoltageLevel
+12:38:06,418  RX  04                                               ACK
+12:38:06,418  TX  04                                               ACK
+12:38:06,531  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:06,531  TX  01 00 02 03 01                                   SUBSCRIBE 00 02 03 01  power.batteryProtectionLevel
+12:38:06,681  RX  04                                               ACK
+12:38:06,681  TX  04                                               ACK
+12:38:06,756  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:06,757  TX  01 00 03 03 01                                   SUBSCRIBE 00 03 03 01  power.compressorPower
+12:38:06,831  RX  04                                               ACK
+12:38:06,832  TX  04                                               ACK
+12:38:06,906  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:06,907  TX  01 00 05 03 01                                   SUBSCRIBE 00 05 03 01  power.powerSource
+12:38:06,982  RX  04                                               ACK
+12:38:06,983  TX  04                                               ACK
+12:38:07,056  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:07,057  TX  04                                               ACK
+12:38:07,131  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:38:07,132  TX  04                                               ACK
+12:38:07,206  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:07,207  TX  04                                               ACK
+12:38:07,318  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:38:07,319  TX  04                                               ACK
+12:38:07,393  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:07,394  TX  04                                               ACK
+12:38:07,468  RX  00 00 C0 00 00 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00 PUBLISH 00 C0 00 00 = 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00  productInformation.productModelNumber = CFX335
+12:38:07,469  TX  04                                               ACK
+12:38:07,543  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:07,544  TX  04                                               ACK
+12:38:07,618  RX  00 00 C4 00 00 01                                PUBLISH 00 C4 00 00 = 01  productInformation.productType = 1
+12:38:07,619  TX  04                                               ACK
+12:38:07,694  RX  00 00 C1 00 80 56 33 2E 35 31 30 2B 44 44 32 2E 32 00 PUBLISH 00 C1 00 80 = 56 33 2E 35 31 30 2B 44 44 32 2E 32 00  deviceSpecific.ccFirmwareVersion = V3.510+DD2.2
+12:38:07,695  TX  04                                               ACK
+12:38:07,768  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:07,769  TX  04                                               ACK
+12:38:07,843  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:07,844  TX  04                                               ACK
+12:38:07,918  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:07,919  TX  04                                               ACK
+12:38:07,993  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:07,994  TX  04                                               ACK
+12:38:08,068  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:08,069  TX  04                                               ACK
+12:38:08,143  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:08,144  TX  04                                               ACK
+12:38:08,218  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:38:08,219  TX  04                                               ACK
+12:38:08,293  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:08,294  TX  04                                               ACK
+12:38:08,368  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:38:08,369  TX  04                                               ACK
+12:38:08,481  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:08,482  TX  04                                               ACK
+12:38:08,557  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:38:08,558  TX  04                                               ACK
+12:38:08,631  RX  00 00 01 03 01 72 00                             PUBLISH 00 01 03 01 = 72 00  power.batteryVoltageLevel = 11.4
+12:38:08,632  TX  04                                               ACK
+12:38:08,706  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:38:08,707  TX  04                                               ACK
+12:38:08,781  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:38:08,782  TX  04                                               ACK
+12:38:08,931  RX  00 00 C0 00 00 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00 PUBLISH 00 C0 00 00 = 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00  productInformation.productModelNumber = CFX335
+12:38:08,932  TX  04                                               ACK
+12:38:09,007  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:09,007  TX  04                                               ACK
+12:38:09,081  RX  00 00 C4 00 00 01                                PUBLISH 00 C4 00 00 = 01  productInformation.productType = 1
+12:38:09,082  TX  04                                               ACK
+12:38:09,156  RX  00 00 C1 00 80 56 33 2E 35 31 30 2B 44 44 32 2E 32 00 PUBLISH 00 C1 00 80 = 56 33 2E 35 31 30 2B 44 44 32 2E 32 00  deviceSpecific.ccFirmwareVersion = V3.510+DD2.2
+12:38:09,157  TX  04                                               ACK
+12:38:09,231  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:09,232  TX  04                                               ACK
+12:38:09,306  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:09,307  TX  04                                               ACK
+12:38:09,381  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:09,382  TX  04                                               ACK
+12:38:09,458  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:09,458  TX  04                                               ACK
+12:38:09,568  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:09,569  TX  04                                               ACK
+12:38:09,643  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:09,644  TX  04                                               ACK
+12:38:09,718  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:38:09,719  TX  04                                               ACK
+12:38:09,793  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:09,794  TX  04                                               ACK
+12:38:09,868  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:38:09,869  TX  04                                               ACK
+12:38:09,981  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:09,982  TX  04                                               ACK
+12:38:10,056  RX  00 00 C0 00 00 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00 PUBLISH 00 C0 00 00 = 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00  productInformation.productModelNumber = CFX335
+12:38:10,057  TX  04                                               ACK
+12:38:10,131  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:10,132  TX  04                                               ACK
+12:38:10,206  RX  00 00 C4 00 00 01                                PUBLISH 00 C4 00 00 = 01  productInformation.productType = 1
+12:38:10,207  TX  04                                               ACK
+12:38:10,281  RX  00 00 C0 00 00 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00 PUBLISH 00 C0 00 00 = 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00  productInformation.productModelNumber = CFX335
+12:38:10,281  TX  04                                               ACK
+12:38:10,356  RX  00 00 C1 00 80 56 33 2E 35 31 30 2B 44 44 32 2E 32 00 PUBLISH 00 C1 00 80 = 56 33 2E 35 31 30 2B 44 44 32 2E 32 00  deviceSpecific.ccFirmwareVersion = V3.510+DD2.2
+12:38:10,357  TX  04                                               ACK
+12:38:10,431  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:10,432  TX  04                                               ACK
+12:38:10,506  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:10,507  TX  04                                               ACK
+12:38:10,581  RX  00 00 C4 00 00 01                                PUBLISH 00 C4 00 00 = 01  productInformation.productType = 1
+12:38:10,582  TX  04                                               ACK
+12:38:10,656  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:10,657  TX  04                                               ACK
+12:38:10,731  RX  00 00 C1 00 80 56 33 2E 35 31 30 2B 44 44 32 2E 32 00 PUBLISH 00 C1 00 80 = 56 33 2E 35 31 30 2B 44 44 32 2E 32 00  deviceSpecific.ccFirmwareVersion = V3.510+DD2.2
+12:38:10,732  TX  04                                               ACK
+12:38:10,918  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:10,919  TX  04                                               ACK
+12:38:10,993  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:10,994  TX  04                                               ACK
+12:38:11,106  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:11,107  TX  04                                               ACK
+12:38:11,181  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:11,182  TX  04                                               ACK
+12:38:11,256  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:11,257  TX  04                                               ACK
+12:38:11,331  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:11,332  TX  04                                               ACK
+12:38:11,406  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:11,407  TX  04                                               ACK
+12:38:11,518  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:11,519  TX  04                                               ACK
+12:38:11,593  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:38:11,594  TX  04                                               ACK
+12:38:11,668  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:11,669  TX  04                                               ACK
+12:38:11,743  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:11,744  TX  04                                               ACK
+12:38:11,818  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:11,819  TX  04                                               ACK
+12:38:11,893  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:38:11,894  TX  04                                               ACK
+12:38:11,968  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:38:11,969  TX  04                                               ACK
+12:38:12,043  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:12,044  TX  04                                               ACK
+12:38:12,118  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:12,119  TX  04                                               ACK
+12:38:12,231  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:38:12,232  TX  04                                               ACK
+12:38:12,306  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:12,307  TX  04                                               ACK
+12:38:12,381  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:38:12,382  TX  04                                               ACK
+12:38:12,493  RX  00 00 C0 00 00 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00 PUBLISH 00 C0 00 00 = 43 46 58 33 33 35 00 35 20 44 5A 00 00 00 00  productInformation.productModelNumber = CFX335
+12:38:12,494  TX  04                                               ACK
+12:38:12,643  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:12,644  TX  04                                               ACK
+12:38:16,664  --  RAW FRAME 01 01 00 00 81
+12:38:16,768  RX  04                                               ACK
+12:38:16,770  RX  00 00 00 06 01 43 46 58 33 5F 61 39 30 62 66 38  PUBLISH 00 00 06 01 = 43 46 58 33 5F 61 39 30 62 66 38  communication.deviceName = CFX3_a90bf8
+12:38:16,771  TX  04                                               ACK
+12:38:16,956  RX  00 00 03 04 01 00                                PUBLISH 00 03 04 01 = 00  errors.connectionError = no
+12:38:16,957  TX  04                                               ACK
+12:38:17,068  RX  00 00 03 05 01 00                                PUBLISH 00 03 05 01 = 00  alerts.temperatureAlertDcm = no
+12:38:17,068  TX  04                                               ACK
+12:38:17,182  RX  00 00 00 07 01 <redacted 16 bytes>               PUBLISH 00 00 07 01  wiFiSettings.stationSsid0 = <redacted>
+12:38:17,183  TX  04                                               ACK
+12:38:17,368  RX  00 01 00 07 01                                   PUBLISH 01 00 07 01  wiFiSettings.stationSsid1
+12:38:17,368  TX  04                                               ACK
+12:38:17,481  RX  00 02 00 07 01                                   PUBLISH 02 00 07 01  wiFiSettings.stationSsid2
+12:38:17,481  TX  04                                               ACK
+12:38:17,706  RX  00 00 40 01 01 A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3 PUBLISH 00 40 01 01 = A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3  compartment.c0TemperatureHistoryHour = HistoryData(values=(16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:17,707  TX  04                                               ACK
+12:38:17,818  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:17,818  TX  04                                               ACK
+12:38:18,006  RX  00 00 42 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 00 42 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  compartment.c0TemperatureHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:18,007  TX  04                                               ACK
+12:38:18,193  RX  00 00 40 03 01 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3 PUBLISH 00 40 03 01 = 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3  power.dcCurrentHistoryHour = HistoryData(values=(0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:18,194  TX  04                                               ACK
+12:38:18,306  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:18,307  TX  04                                               ACK
+12:38:18,456  RX  00 00 42 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 00 42 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  power.dcCurrentHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:18,457  TX  04                                               ACK
+12:38:18,531  RX  00 00 08 06 01 01                                PUBLISH 00 08 06 01 = 01  communication.wifiApConnected = yes
+12:38:18,532  TX  04                                               ACK
+12:38:18,643  RX  00 00 00 02 01 00                                PUBLISH 00 00 02 01 = 00  presentation.presentedTemperatureUnit = 0
+12:38:18,644  TX  04                                               ACK
+12:38:18,906  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:18,907  TX  04                                               ACK
+12:38:19,019  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:19,020  TX  04                                               ACK
+12:38:19,131  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:19,132  TX  04                                               ACK
+12:38:19,319  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:38:19,320  TX  04                                               ACK
+12:38:19,431  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:19,431  TX  04                                               ACK
+12:38:19,618  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:19,619  TX  04                                               ACK
+12:38:19,731  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:19,732  TX  04                                               ACK
+12:38:19,844  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:19,845  TX  04                                               ACK
+12:38:20,031  RX  00 00 81 01 01 6A FF 28 00                       PUBLISH 00 81 01 01 = 6A FF 28 00  compartment.c0RecommendedRange = -15.0 … 4.0
+12:38:20,032  TX  04                                               ACK
+12:38:20,143  RX  00 00 C5 00 00 00                                PUBLISH 00 C5 00 00 = 00  productInformation.productHingePosition = 0
+12:38:20,144  TX  04                                               ACK
+12:38:20,369  RX  00 00 01 04 01 00                                PUBLISH 00 01 04 01 = 00  errors.c0NtcOpenError = no
+12:38:20,370  TX  04                                               ACK
+12:38:20,481  RX  00 00 02 04 01 00                                PUBLISH 00 02 04 01 = 00  errors.c0NtcShortError = no
+12:38:20,481  TX  04                                               ACK
+12:38:20,669  RX  00 00 09 04 01 00                                PUBLISH 00 09 04 01 = 00  errors.solenoidValveError = no
+12:38:20,670  TX  04                                               ACK
+12:38:20,856  RX  00 00 32 04 01 00                                PUBLISH 00 32 04 01 = 00  errors.fanOvercurrentError = no
+12:38:20,857  TX  04                                               ACK
+12:38:20,969  RX  00 00 33 04 01 00                                PUBLISH 00 33 04 01 = 00  errors.compressorStartFailError = no
+12:38:20,970  TX  04                                               ACK
+12:38:21,119  RX  00 00 34 04 01 00                                PUBLISH 00 34 04 01 = 00  errors.compressorSpeedError = no
+12:38:21,120  TX  04                                               ACK
+12:38:21,194  RX  00 00 35 04 01 00                                PUBLISH 00 35 04 01 = 00  errors.controllerOvertempError = no
+12:38:21,195  TX  04                                               ACK
+12:38:21,269  RX  00 00 02 05 01 00                                PUBLISH 00 02 05 01 = 00  alerts.voltageAlert = no
+12:38:21,270  TX  04                                               ACK
+12:38:21,344  RX  00 00 01 05 01 00                                PUBLISH 00 01 05 01 = 00  alerts.doorAlert = no
+12:38:21,345  TX  04                                               ACK
+12:38:21,419  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:21,420  TX  04                                               ACK
+12:38:21,569  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:21,570  TX  04                                               ACK
+12:38:36,679  --  RAW FRAME 01 02 00 00 81
+12:38:36,757  RX  04                                               ACK
+12:38:36,758  RX  00 00 00 06 01 43 46 58 33 5F 61 39 30 62 66 38  PUBLISH 00 00 06 01 = 43 46 58 33 5F 61 39 30 62 66 38  communication.deviceName = CFX3_a90bf8
+12:38:36,758  TX  04                                               ACK
+12:38:36,832  RX  00 00 03 04 01 00                                PUBLISH 00 03 04 01 = 00  errors.connectionError = no
+12:38:36,833  TX  04                                               ACK
+12:38:36,907  RX  00 00 03 05 01 00                                PUBLISH 00 03 05 01 = 00  alerts.temperatureAlertDcm = no
+12:38:36,908  TX  04                                               ACK
+12:38:37,057  RX  00 00 00 07 01 <redacted 16 bytes>               PUBLISH 00 00 07 01  wiFiSettings.stationSsid0 = <redacted>
+12:38:37,058  TX  04                                               ACK
+12:38:37,132  RX  00 01 00 07 01                                   PUBLISH 01 00 07 01  wiFiSettings.stationSsid1
+12:38:37,133  TX  04                                               ACK
+12:38:37,207  RX  00 02 00 07 01                                   PUBLISH 02 00 07 01  wiFiSettings.stationSsid2
+12:38:37,208  TX  04                                               ACK
+12:38:37,357  RX  00 00 40 01 01 A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3 PUBLISH 00 40 01 01 = A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3  compartment.c0TemperatureHistoryHour = HistoryData(values=(16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:37,357  TX  04                                               ACK
+12:38:37,544  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:37,545  TX  04                                               ACK
+12:38:37,657  RX  00 00 42 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 00 42 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  compartment.c0TemperatureHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:37,658  TX  04                                               ACK
+12:38:37,770  RX  00 00 40 03 01 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3 PUBLISH 00 40 03 01 = 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3  power.dcCurrentHistoryHour = HistoryData(values=(0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:37,770  TX  04                                               ACK
+12:38:37,958  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:37,959  TX  04                                               ACK
+12:38:38,069  RX  00 00 42 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 00 42 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  power.dcCurrentHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:38,070  TX  04                                               ACK
+12:38:38,257  RX  00 00 08 06 01 01                                PUBLISH 00 08 06 01 = 01  communication.wifiApConnected = yes
+12:38:38,258  TX  04                                               ACK
+12:38:38,370  RX  00 00 00 02 01 00                                PUBLISH 00 00 02 01 = 00  presentation.presentedTemperatureUnit = 0
+12:38:38,371  TX  04                                               ACK
+12:38:38,482  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:38,483  TX  04                                               ACK
+12:38:38,633  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:38,634  TX  04                                               ACK
+12:38:38,744  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:38,745  TX  04                                               ACK
+12:38:38,894  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:38:38,895  TX  04                                               ACK
+12:38:38,969  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:38,970  TX  04                                               ACK
+12:38:39,044  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:39,045  TX  04                                               ACK
+12:38:39,119  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:39,119  TX  04                                               ACK
+12:38:39,307  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:39,307  TX  04                                               ACK
+12:38:39,382  RX  00 00 81 01 01 6A FF 28 00                       PUBLISH 00 81 01 01 = 6A FF 28 00  compartment.c0RecommendedRange = -15.0 … 4.0
+12:38:39,383  TX  04                                               ACK
+12:38:39,457  RX  00 00 C5 00 00 00                                PUBLISH 00 C5 00 00 = 00  productInformation.productHingePosition = 0
+12:38:39,458  TX  04                                               ACK
+12:38:39,532  RX  00 00 06 03 01 00                                PUBLISH 00 06 03 01 = 00  power.icemakerPower = no
+12:38:39,533  TX  04                                               ACK
+12:38:39,607  RX  00 00 01 04 01 00                                PUBLISH 00 01 04 01 = 00  errors.c0NtcOpenError = no
+12:38:39,608  TX  04                                               ACK
+12:38:39,757  RX  00 00 02 04 01 00                                PUBLISH 00 02 04 01 = 00  errors.c0NtcShortError = no
+12:38:39,758  TX  04                                               ACK
+12:38:39,832  RX  00 00 09 04 01 00                                PUBLISH 00 09 04 01 = 00  errors.solenoidValveError = no
+12:38:39,833  TX  04                                               ACK
+12:38:39,907  RX  00 00 32 04 01 00                                PUBLISH 00 32 04 01 = 00  errors.fanOvercurrentError = no
+12:38:39,908  TX  04                                               ACK
+12:38:39,982  RX  00 00 33 04 01 00                                PUBLISH 00 33 04 01 = 00  errors.compressorStartFailError = no
+12:38:39,983  TX  04                                               ACK
+12:38:40,057  RX  00 00 34 04 01 00                                PUBLISH 00 34 04 01 = 00  errors.compressorSpeedError = no
+12:38:40,058  TX  04                                               ACK
+12:38:40,132  RX  00 00 35 04 01 00                                PUBLISH 00 35 04 01 = 00  errors.controllerOvertempError = no
+12:38:40,133  TX  04                                               ACK
+12:38:40,207  RX  00 00 02 05 01 00                                PUBLISH 00 02 05 01 = 00  alerts.voltageAlert = no
+12:38:40,208  TX  04                                               ACK
+12:38:40,282  RX  00 00 01 05 01 00                                PUBLISH 00 01 05 01 = 00  alerts.doorAlert = no
+12:38:40,283  TX  04                                               ACK
+12:38:40,432  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:38:40,432  TX  04                                               ACK
+12:38:40,507  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:38:40,508  TX  04                                               ACK
+12:38:40,582  RX  00 00 01 01 01 BE 00                             PUBLISH 00 01 01 01 = BE 00  compartment.c0MeasuredTemperature = 19.0 °C
+12:38:40,583  TX  04                                               ACK
+12:38:40,694  RX  00 00 01 01 01 B4 00                             PUBLISH 00 01 01 01 = B4 00  compartment.c0MeasuredTemperature = 18.0 °C
+12:38:40,695  TX  04                                               ACK
+12:38:47,182  RX  00 00 01 01 01 BE 00                             PUBLISH 00 01 01 01 = BE 00  compartment.c0MeasuredTemperature = 19.0 °C
+12:38:47,183  TX  04                                               ACK
+12:38:56,690  --  RAW FRAME 01 03 00 00 81
+12:38:56,745  RX  04                                               ACK
+12:38:56,746  RX  00 00 00 06 01 43 46 58 33 5F 61 39 30 62 66 38  PUBLISH 00 00 06 01 = 43 46 58 33 5F 61 39 30 62 66 38  communication.deviceName = CFX3_a90bf8
+12:38:56,746  TX  04                                               ACK
+12:38:56,820  RX  00 00 03 04 01 00                                PUBLISH 00 03 04 01 = 00  errors.connectionError = no
+12:38:56,821  TX  04                                               ACK
+12:38:56,897  RX  00 00 03 05 01 00                                PUBLISH 00 03 05 01 = 00  alerts.temperatureAlertDcm = no
+12:38:56,897  TX  04                                               ACK
+12:38:57,082  RX  00 00 00 07 01 <redacted 16 bytes>               PUBLISH 00 00 07 01  wiFiSettings.stationSsid0 = <redacted>
+12:38:57,083  TX  04                                               ACK
+12:38:57,157  RX  00 01 00 07 01                                   PUBLISH 01 00 07 01  wiFiSettings.stationSsid1
+12:38:57,157  TX  04                                               ACK
+12:38:57,232  RX  00 02 00 07 01                                   PUBLISH 02 00 07 01  wiFiSettings.stationSsid2
+12:38:57,233  TX  04                                               ACK
+12:38:57,307  RX  00 00 40 01 01 A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3 PUBLISH 00 40 01 01 = A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3  compartment.c0TemperatureHistoryHour = HistoryData(values=(16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:57,307  TX  04                                               ACK
+12:38:57,382  RX  00 10 40 01 01 00 00 00 00 00 00 00 80 00 80 00 80 00 80 B3 PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 80 00 80 00 80 00 80 B3  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:57,382  TX  04                                               ACK
+12:38:57,495  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:57,495  TX  04                                               ACK
+12:38:57,570  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:57,571  TX  04                                               ACK
+12:38:57,645  RX  00 00 42 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 00 42 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  compartment.c0TemperatureHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:57,646  TX  04                                               ACK
+12:38:57,720  RX  00 10 42 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 10 42 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  compartment.c1TemperatureHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:57,721  TX  04                                               ACK
+12:38:57,795  RX  00 00 40 03 01 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3 PUBLISH 00 40 03 01 = 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3  power.dcCurrentHistoryHour = HistoryData(values=(0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=179)
+12:38:57,796  TX  04                                               ACK
+12:38:57,907  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 27  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=39)
+12:38:57,908  TX  04                                               ACK
+12:38:57,982  RX  00 00 42 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06 PUBLISH 00 42 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 06  power.dcCurrentHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=6)
+12:38:57,983  TX  04                                               ACK
+12:38:58,057  RX  00 00 08 06 01 01                                PUBLISH 00 08 06 01 = 01  communication.wifiApConnected = yes
+12:38:58,058  TX  04                                               ACK
+12:38:58,170  RX  00 00 00 02 01 00                                PUBLISH 00 00 02 01 = 00  presentation.presentedTemperatureUnit = 0
+12:38:58,171  TX  04                                               ACK
+12:38:58,245  RX  00 00 01 01 01 BE 00                             PUBLISH 00 01 01 01 = BE 00  compartment.c0MeasuredTemperature = 19.0 °C
+12:38:58,245  TX  04                                               ACK
+12:38:58,320  RX  00 10 01 01 01 00 00                             PUBLISH 10 01 01 01 = 00 00  compartment.c1MeasuredTemperature = 0.0 °C
+12:38:58,321  TX  04                                               ACK
+12:38:58,395  RX  00 00 08 01 01 00                                PUBLISH 00 08 01 01 = 00  compartment.c0DoorOpen = no
+12:38:58,395  TX  04                                               ACK
+12:38:58,470  RX  00 10 08 01 01 00                                PUBLISH 10 08 01 01 = 00  compartment.c1DoorOpen = no
+12:38:58,471  TX  04                                               ACK
+12:38:58,620  RX  00 00 05 03 01 01                                PUBLISH 00 05 03 01 = 01  power.powerSource = 1
+12:38:58,621  TX  04                                               ACK
+12:38:58,695  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:38:58,696  TX  04                                               ACK
+12:38:58,770  RX  00 00 00 03 01 01                                PUBLISH 00 00 03 01 = 01  power.coolerPower = yes
+12:38:58,771  TX  04                                               ACK
+12:38:58,845  RX  00 00 00 01 01 01                                PUBLISH 00 00 01 01 = 01  compartment.c0Power = yes
+12:38:58,846  TX  04                                               ACK
+12:38:58,920  RX  00 10 00 01 01 00                                PUBLISH 10 00 01 01 = 00  compartment.c1Power = no
+12:38:58,921  TX  04                                               ACK
+12:38:59,032  RX  00 00 80 01 01 24 FF C8 00                       PUBLISH 00 80 01 01 = 24 FF C8 00  compartment.c0TemperatureRange = -22.0 … 20.0
+12:38:59,033  TX  04                                               ACK
+12:38:59,107  RX  00 10 80 01 01 24 FF C8 00                       PUBLISH 10 80 01 01 = 24 FF C8 00  compartment.c1TemperatureRange = -22.0 … 20.0
+12:38:59,108  TX  04                                               ACK
+12:38:59,182  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:38:59,183  TX  04                                               ACK
+12:38:59,257  RX  00 10 02 01 01 6A FF                             PUBLISH 10 02 01 01 = 6A FF  compartment.c1SetTemperature = -15.0 °C
+12:38:59,258  TX  04                                               ACK
+12:38:59,332  RX  00 00 81 01 01 6A FF 28 00                       PUBLISH 00 81 01 01 = 6A FF 28 00  compartment.c0RecommendedRange = -15.0 … 4.0
+12:38:59,333  TX  04                                               ACK
+12:38:59,407  RX  00 10 81 01 01 6A FF 28 00                       PUBLISH 10 81 01 01 = 6A FF 28 00  compartment.c1RecommendedRange = -15.0 … 4.0
+12:38:59,408  TX  04                                               ACK
+12:38:59,482  RX  00 00 C5 00 00 00                                PUBLISH 00 C5 00 00 = 00  productInformation.productHingePosition = 0
+12:38:59,483  TX  04                                               ACK
+12:38:59,557  RX  00 00 01 04 01 00                                PUBLISH 00 01 04 01 = 00  errors.c0NtcOpenError = no
+12:38:59,558  TX  04                                               ACK
+12:38:59,632  RX  00 00 02 04 01 00                                PUBLISH 00 02 04 01 = 00  errors.c0NtcShortError = no
+12:38:59,633  TX  04                                               ACK
+12:38:59,707  RX  00 00 09 04 01 00                                PUBLISH 00 09 04 01 = 00  errors.solenoidValveError = no
+12:38:59,708  TX  04                                               ACK
+12:38:59,782  RX  00 00 11 04 01 00                                PUBLISH 00 11 04 01 = 00  errors.c1NtcOpenError = no
+12:38:59,782  TX  04                                               ACK
+12:38:59,857  RX  00 00 12 04 01 00                                PUBLISH 00 12 04 01 = 00  errors.c1NtcShortError = no
+12:38:59,858  TX  04                                               ACK
+12:38:59,932  RX  00 00 32 04 01 00                                PUBLISH 00 32 04 01 = 00  errors.fanOvercurrentError = no
+12:38:59,933  TX  04                                               ACK
+12:39:00,007  RX  00 00 33 04 01 00                                PUBLISH 00 33 04 01 = 00  errors.compressorStartFailError = no
+12:39:00,008  TX  04                                               ACK
+12:39:00,082  RX  00 00 34 04 01 00                                PUBLISH 00 34 04 01 = 00  errors.compressorSpeedError = no
+12:39:00,083  TX  04                                               ACK
+12:39:00,195  RX  00 00 35 04 01 00                                PUBLISH 00 35 04 01 = 00  errors.controllerOvertempError = no
+12:39:00,195  TX  04                                               ACK
+12:39:00,270  RX  00 00 01 05 01 00                                PUBLISH 00 01 05 01 = 00  alerts.doorAlert = no
+12:39:00,270  TX  04                                               ACK
+12:39:00,345  RX  00 00 02 05 01 00                                PUBLISH 00 02 05 01 = 00  alerts.voltageAlert = no
+12:39:00,346  TX  04                                               ACK
+12:39:00,420  RX  00 00 02 03 01 01                                PUBLISH 00 02 03 01 = 01  power.batteryProtectionLevel = 1
+12:39:00,421  TX  04                                               ACK
+12:39:00,608  RX  00 00 C1 00 00 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00 PUBLISH 00 C1 00 00 = 34 34 33 30 34 33 34 35 00 00 00 00 00 00 00  productInformation.productSerialNumber = 44304345
+12:39:00,609  TX  04                                               ACK
+12:39:00,720  RX  00 00 40 01 01 A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 CC PUBLISH 00 40 01 01 = A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 CC  compartment.c0TemperatureHistoryHour = HistoryData(values=(16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=204)
+12:39:00,721  TX  04                                               ACK
+12:39:00,832  RX  00 10 40 01 01 00 00 00 00 00 00 00 80 00 80 00 80 00 80 CC PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 80 00 80 00 80 00 80 CC  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8, -3276.8), trailer=204)
+12:39:00,833  TX  04                                               ACK
+12:39:01,020  RX  00 00 40 03 01 04 00 00 00 19 00 00 80 00 80 00 80 00 80 CC PUBLISH 00 40 03 01 = 04 00 00 00 19 00 00 80 00 80 00 80 00 80 CC  power.dcCurrentHistoryHour = HistoryData(values=(0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=204)
+12:39:01,021  TX  04                                               ACK
+12:39:01,132  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 28 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 28  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=40)
+12:39:01,133  TX  04                                               ACK
+12:39:01,320  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 28 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 28  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=40)
+12:39:01,321  TX  04                                               ACK
+12:39:01,507  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 28 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 28  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=40)
+12:39:01,508  TX  04                                               ACK
+12:39:16,706  TX  02                                               PING
+12:39:16,809  RX  04                                               ACK
+12:39:46,434  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:39:46,435  TX  04                                               ACK
+12:39:49,021  RX  00 00 01 03 01 73 00                             PUBLISH 00 01 03 01 = 73 00  power.batteryVoltageLevel = 11.5
+12:39:49,022  TX  04                                               ACK
+12:39:57,309  RX  00 00 40 01 01 A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 E6 PUBLISH 00 40 01 01 = A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 E6  compartment.c0TemperatureHistoryHour = HistoryData(values=(16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=230)
+12:39:57,310  TX  04                                               ACK
+12:39:57,384  RX  00 10 40 01 01 00 00 00 00 00 00 00 80 00 80 00 80 00 80 E6 PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 80 00 80 00 80 00 80 E6  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8, -3276.8), trailer=230)
+12:39:57,385  TX  04                                               ACK
+12:39:57,497  RX  00 00 40 03 01 04 00 00 00 19 00 00 80 00 80 00 80 00 80 E6 PUBLISH 00 40 03 01 = 04 00 00 00 19 00 00 80 00 80 00 80 00 80 E6  power.dcCurrentHistoryHour = HistoryData(values=(0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8, -3276.8), trailer=230)
+12:39:57,498  TX  04                                               ACK
+12:39:57,646  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 29 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 29  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=41)
+12:39:57,647  TX  04                                               ACK
+12:39:57,760  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 29 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 29  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=41)
+12:39:57,760  TX  04                                               ACK
+12:39:57,947  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 29 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 29  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=41)
+12:39:57,948  TX  04                                               ACK
+12:39:59,334  RX  00 00 01 03 01 72 00                             PUBLISH 00 01 03 01 = 72 00  power.batteryVoltageLevel = 11.4
+12:39:59,334  TX  04                                               ACK
+12:40:04,509  RX  00 00 01 03 01 75 00                             PUBLISH 00 01 03 01 = 75 00  power.batteryVoltageLevel = 11.7
+12:40:04,510  TX  04                                               ACK

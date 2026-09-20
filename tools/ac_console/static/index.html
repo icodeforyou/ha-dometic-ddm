@@ -108,7 +108,7 @@
     </section>
 
     <section id="ac-section">
-      <h2>2 · Air conditioner <span class="small" id="ac-ident"></span></h2>
+      <div class="ac-only"><h2>2 · Air conditioner <span class="small" id="ac-ident"></span></h2>
       <div class="tiles">
         <div class="tile big" data-k="ac.itemp"><div class="k">Inside</div><div class="v">—</div><div class="s"></div></div>
         <div class="tile big" data-k="ac.ttemp"><div class="k">Target</div><div class="v">—</div><div class="s"></div></div>
@@ -126,7 +126,7 @@
         <div class="tile" data-k="ac.sleep"><div class="k">Sleep</div><div class="v">—</div><div class="s"></div></div>
         <div class="tile" data-k="ac.flaps"><div class="k">Flaps</div><div class="v">—</div><div class="s"></div></div>
         <div class="tile" data-k="ac.status"><div class="k">Errors</div><div class="v">—</div><div class="s"></div></div>
-      </div>
+      </div></div>
 
       <h2 style="margin-top:16px">3 · Controls</h2>
       <div class="lock">
@@ -134,15 +134,15 @@
         <label for="enable-writes"><b>Enable writes.</b> Off by default: read and verify decoding against the AC's own display first. Every write is logged.</label>
       </div>
       <div class="controls">
-        <div class="ctl"><div class="k">Power (ac.on)</div><div class="seg"><button data-w="ac.on" data-v="1">On</button><button data-w="ac.on" data-v="0">Off</button></div></div>
-        <div class="ctl"><div class="k">Mode (ac.md)</div><div class="seg" id="mode-seg"></div></div>
-        <div class="ctl"><div class="k">Target temperature (ac.ttemp)</div>
+        <div class="ctl ac-only"><div class="k">Power (ac.on)</div><div class="seg"><button data-w="ac.on" data-v="1">On</button><button data-w="ac.on" data-v="0">Off</button></div></div>
+        <div class="ctl ac-only"><div class="k">Mode (ac.md)</div><div class="seg" id="mode-seg"></div></div>
+        <div class="ctl ac-only"><div class="k">Target temperature (ac.ttemp)</div>
           <div class="row"><button data-step="-1">−1</button><input id="ttemp" type="number" step="0.5" value="21" style="width:80px"><button data-step="1">+1</button><button id="btn-ttemp" class="primary">Set</button></div></div>
-        <div class="ctl"><div class="k">Fan speed (ac.fspd, enum unknown → 0…3)</div><div class="seg"><button data-w="ac.fspd" data-v="0">0</button><button data-w="ac.fspd" data-v="1">1</button><button data-w="ac.fspd" data-v="2">2</button><button data-w="ac.fspd" data-v="3">3</button></div></div>
-        <div class="ctl"><div class="k">Light (ac.lgt)</div><div class="seg"><button data-w="ac.lgt" data-v="1">On</button><button data-w="ac.lgt" data-v="0">Off</button></div></div>
-        <div class="ctl"><div class="k">Eco (ac.eco)</div><div class="seg"><button data-w="ac.eco" data-v="1">On</button><button data-w="ac.eco" data-v="0">Off</button></div></div>
-        <div class="ctl"><div class="k">Sleep (ac.sleep)</div><div class="seg"><button data-w="ac.sleep" data-v="1">On</button><button data-w="ac.sleep" data-v="0">Off</button></div></div>
-        <div class="ctl"><div class="k">Any parameter</div>
+        <div class="ctl ac-only"><div class="k">Fan speed (ac.fspd, enum unknown → 0…3)</div><div class="seg"><button data-w="ac.fspd" data-v="0">0</button><button data-w="ac.fspd" data-v="1">1</button><button data-w="ac.fspd" data-v="2">2</button><button data-w="ac.fspd" data-v="3">3</button></div></div>
+        <div class="ctl ac-only"><div class="k">Light (ac.lgt)</div><div class="seg"><button data-w="ac.lgt" data-v="1">On</button><button data-w="ac.lgt" data-v="0">Off</button></div></div>
+        <div class="ctl ac-only"><div class="k">Eco (ac.eco)</div><div class="seg"><button data-w="ac.eco" data-v="1">On</button><button data-w="ac.eco" data-v="0">Off</button></div></div>
+        <div class="ctl ac-only"><div class="k">Sleep (ac.sleep)</div><div class="seg"><button data-w="ac.sleep" data-v="1">On</button><button data-w="ac.sleep" data-v="0">Off</button></div></div>
+        <div class="ctl"><div class="k">Any parameter <span class="small">(CFX3: class <span class="mono">compartment</span>, param <span class="mono">c0SetTemperature</span>, value e.g. <span class="mono">4</span>)</span></div>
           <div class="row"><input id="w-class" placeholder="class" style="width:70px" class="mono" list="classes"><input id="w-param" placeholder="param" style="width:90px" class="mono" list="params"><input id="w-value" placeholder="value / enum name" style="width:120px"><button id="btn-write">Write</button></div>
           <div class="row" style="margin-top:6px"><button id="btn-sub-one" title="Subscribe to class.param only">Subscribe</button><span class="small" id="param-hint"></span></div>
           <datalist id="classes"></datalist><datalist id="params"></datalist>
@@ -230,7 +230,7 @@
     $('#enable-writes').checked = s.writes_enabled;
     $('#btn-disconnect').disabled = !s.connected;
     document.querySelectorAll('[data-w], #btn-ttemp, #btn-write, #btn-raw').forEach(b => b.disabled = !(s.ready && s.writes_enabled));
-    $('#ac-section').style.display = (s.protocol === 'ddm1') ? 'none' : '';
+    document.querySelectorAll('.ac-only').forEach(el => el.style.display = (s.protocol === 'ddm1') ? 'none' : '');
     if (s.values) { state.values = {}; s.values.forEach(onUpdate); }
     const proto = s.protocol || $('#protocol').value;
     if (proto !== state.loadedParams) loadParams(proto);

@@ -52,7 +52,14 @@ App-koden parsar: `topic = bytes.slice(1,5)`, `value = bytes.slice(5)`, och krä
 | NOP | `0x06` | `0x06` |
 | FRAGMENT | – | `0x14` (20) — bara för jumbo-överföringar (TLS-CSR), irrelevant för oss |
 
-### Handskakning (DDM1, ur `reportDDM1Data`)
+### Handskakning (DDM1) — VERIFIERAD 2026-09-20 mot CFX3 (CFX335, fw V3.510+DD2.2)
+
+Observerat: klienten måste öppna. `02` (PING) → enheten `04` → `03` (HELLO) → enheten `04`
+→ READY. Enheten skickar därefter `02` var 2:a sekund och **publicerar ingenting förrän
+klienten svarar `04` på dessa**. Beskrivningen nedan (från appkoden) att enheten skickar `04`
+först stämde inte på hårdvaran. Se `captures/2026-09-20_cfx3_first-session.md`.
+
+### Handskakning (DDM1, ur `reportDDM1Data`) — ursprunglig tolkning
 
 1. Enheten skickar `[0x04]` (ACK) efter att notifications aktiverats.
 2. Appen svarar `[0x03]` (HELLO).

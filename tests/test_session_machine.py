@@ -156,6 +156,14 @@ def test_unknown_frames_surface_as_unknown() -> None:
 def test_control_frames_when_ready() -> None:
     m = _ready_ddm1()
     assert m.receive(ACK) == [Control(DDM1Action.ACK)]
+    # A CFX3 pings every ~2 s once READY (captured 2026-09-20); we answer with ACK.
+    assert m.receive(b"\x02") == [Control(DDM1Action.PING), Send(ACK)]
+
+
+def test_ping_ack_can_be_disabled() -> None:
+    cfg = HandshakeConfig(steps=(), ack_publishes=False, ack_pings=False)
+    m = ProtocolMachine(Protocol.DDM1, handshake=cfg)
+    m.start()
     assert m.receive(b"\x02") == [Control(DDM1Action.PING)]
 
 

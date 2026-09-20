@@ -302,8 +302,18 @@ async def ble_connector(address: str, protocol: Protocol, console: Console) -> T
     def _disconnected(_client: Any) -> None:
         console.loop.call_soon_threadsafe(console.on_link_lost)
 
-    client = BleakClient(address, disconnected_callback=_disconnected, timeout=30.0)
-    console.log("info", f"Connecting to {address} …")
+    # Prefer BlueZ's own device object over a fresh discovery: a bonded device that is
+    # already connected (or advertising rarely) is invisible to a scan, but BlueZ knows it.
+    target: Any = address
+    device_path = await bluez_device_path(address)
+    if device_path is not None:
+        from bleak.backends.device import BLEDevice  # noqa: PLC0415
+
+        target = BLEDevice(address, address, {"path": device_path})
+        console.log("info", f"Connecting to {address} via BlueZ object {device_path} …")
+    else:
+        console.log("info", f"Connecting to {address} (not known to BlueZ yet, scanning) …")
+    client = BleakClient(target, disconnected_callback=_disconnected, timeout=30.0)
     await client.connect()
     console.bleak_client = client
     mtu = client.mtu_size
@@ -320,6 +330,19 @@ async def ble_connector(address: str, protocol: Protocol, console: Console) -> T
             raise TransportError(f"pairing failed: {err}") from err
     console.log("info", "Enabling notifications")
     return BleTransport(client, protocol, owns_client=True)
+
+
+async def bluez_device_path(address: str) -> str | None:
+    """D-Bus object path BlueZ uses for ``address`` on any adapter, if it knows the device."""
+    try:
+        from bleak.backends.bluezdbus.manager import get_global_bluez_manager  # noqa: PLC0415
+
+        manager = await get_global_bluez_manager()
+    except Exception:  # not on BlueZ
+        return None
+    suffix = "/dev_" + address.upper().replace(":", "_")
+    paths = [p for p in manager._properties if p.endswith(suffix)]
+    return paths[0] if paths else None
 
 
 async def bluez_pair_unconnected(address: str, console: Console) -> None:
@@ -443,7 +466,12 @@ class Console:
                 continue
             task = asyncio.ensure_future(ws.send_str(text))
             self._send_tasks.add(task)
-            task.add_done_callback(self._send_tasks.discard)
+            task.add_done_callback(self._send_done)
+
+    def _send_done(self, task: asyncio.Task[None]) -> None:
+        self._send_tasks.discard(task)
+        if not task.cancelled() and task.exception() is not None:
+            _LOGGER.debug("send to a closed websocket failed: %s", task.exception())
 
     def log(self, level: str, msg: str) -> None:
         getattr(_LOGGER, level if level != "warning" else "warning")(msg)
@@ -698,6 +726,7 @@ async def ws_handler(request: web.Request) -> web.WebSocketResponse:
     ws = web.WebSocketResponse(heartbeat=20)
     await ws.prepare(request)
     console.clients.add(ws)
+    tasks: set[asyncio.Task[None]] = set()
     try:
         await console.handle(ws, {"cmd": "state"})
         async for msg in ws:
@@ -707,11 +736,19 @@ async def ws_handler(request: web.Request) -> web.WebSocketResponse:
                 except json.JSONDecodeError:
                     await ws.send_json({"type": "log", "level": "error", "msg": "bad JSON"})
                     continue
-                await console.handle(ws, payload)
+                # Commands may take 30 s+ (BLE connect). Run them off the read loop so
+                # keepalives and further commands are still processed.
+                task = asyncio.create_task(console.handle(ws, payload))
+                tasks.add(task)
+                task.add_done_callback(tasks.discard)
             elif msg.type in (WSMsgType.CLOSE, WSMsgType.ERROR):
                 break
     finally:
         console.clients.discard(ws)
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
     return ws
 
 
