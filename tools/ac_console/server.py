@@ -305,8 +305,20 @@ async def ble_connector(address: str, protocol: Protocol, console: Console) -> T
     client = BleakClient(address, disconnected_callback=_disconnected, timeout=30.0)
     console.log("info", f"Connecting to {address} …")
     await client.connect()
-    console.log("info", f"Link up, MTU {client.mtu_size}; enabling notifications")
     console.bleak_client = client
+    mtu = client.mtu_size
+    console.log(
+        "info",
+        f"Link up (MTU {mtu}{'; BlueZ reports 23 until the first write' if mtu == 23 else ''})",
+    )
+    if console.state.pair_first:
+        console.log("info", "Bonding before enabling notifications (like the Dometic app) …")
+        try:
+            await client.pair()
+            console.log("info", "Bonded")
+        except Exception as err:
+            raise TransportError(f"pairing failed: {err}") from err
+    console.log("info", "Enabling notifications")
     return BleTransport(client, protocol, owns_client=True)
 
 
@@ -346,6 +358,7 @@ class ConsoleState:
     connected: bool = False
     ready: bool = False
     handshake: str = "default"
+    pair_first: bool = False
     writes_enabled: bool = False
 
 
@@ -362,6 +375,7 @@ class Console:
         self.values: dict[str, dict[str, Any]] = {}
         self.frames: list[dict[str, Any]] = []
         self.loop = asyncio.get_event_loop()
+        self._connecting = False
         self._send_tasks: set[asyncio.Task[None]] = set()
 
     # -- fan-out ---------------------------------------------------------------------
@@ -409,7 +423,10 @@ class Console:
         self.broadcast(message)
 
     def _on_ready(self) -> None:
-        self.log("info", "Handshake complete, session READY")
+        # For a protocol without handshake this fires before notifications are enabled;
+        # the connect() flow then reports READY itself once the link is really usable.
+        if self.session is not None and self.session.transport.connected:
+            self.log("info", "Handshake complete, session READY")
         self.push_state()
 
     def _on_control(self, action: int) -> None:
@@ -442,6 +459,7 @@ class Console:
                         str(msg["address"]),
                         Protocol(msg.get("protocol") or "ddm2"),
                         str(msg.get("handshake") or "default"),
+                        pair_first=bool(msg.get("pair", False)),
                     )
                 case "disconnect":
                     await self.disconnect()
@@ -478,13 +496,27 @@ class Console:
         self.log("info", f"Scan done: {len(devices)} devices, {len(ddm)} speak DDM")
         self.broadcast({"type": "scan", "devices": devices})
 
-    async def connect(self, address: str, protocol: Protocol, handshake: str) -> None:
-        await self.disconnect()
+    async def connect(
+        self, address: str, protocol: Protocol, handshake: str, *, pair_first: bool = False
+    ) -> None:
+        if self._connecting:
+            raise SessionError("a connect is already in progress; wait for it to finish")
         if handshake not in HANDSHAKES:
             raise ValueError(f"unknown handshake {handshake!r}")
+        self._connecting = True
+        try:
+            await self._connect(address, protocol, handshake, pair_first)
+        finally:
+            self._connecting = False
+
+    async def _connect(
+        self, address: str, protocol: Protocol, handshake: str, pair_first: bool
+    ) -> None:
+        await self.disconnect()
         self.state.address = address
         self.state.protocol = protocol.value
         self.state.handshake = handshake
+        self.state.pair_first = pair_first
         self.values.clear()
         self.frames.clear()
         self.push_state()
@@ -514,7 +546,7 @@ class Console:
             raise
         self.push_state()
         if handshake == "none" or (protocol is Protocol.DDM2 and handshake == "default"):
-            self.log("info", "No handshake configured for this protocol; session is READY")
+            self.log("info", "Notifications enabled; no handshake for this protocol, session READY")
 
     async def disconnect(self) -> None:
         session, self.session = self.session, None

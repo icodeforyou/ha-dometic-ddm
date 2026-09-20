@@ -99,6 +99,7 @@
           <option value="hello">handshake: HELLO/ACK</option>
           <option value="ping">handshake: PING first</option>
         </select>
+        <label class="small" title="Call BlueZ pairing right after the link is up, before enabling notifications. The Dometic app bonds first on Android."><input type="checkbox" id="pair-first"> bond first</label>
         <button id="btn-connect" class="primary">Connect</button>
         <button id="btn-pair" title="Ask BlueZ to bond. The Dometic app bonds on Android.">Pair / bond</button>
         <button id="btn-ping" title="Send DDM1 PING (02) to nudge the device">Send PING</button>
@@ -175,6 +176,7 @@
       <ol class="small" style="margin:0;padding-left:18px;line-height:1.7">
         <li>Scan: does the FreshJet advertise manufacturer id <span class="mono">0x0845</span> and service <span class="mono">537a0400</span>? Note name + data.</li>
         <li>Connect as DDM2, handshake <i>default</i>. Then <b>Subscribe dashboard</b>. Do PUBLISH frames (<span class="mono">10 …</span>) arrive for <span class="mono">ac.*</span>? That answers open question 1.</li>
+        <li>If the link drops right after connect: move within 1–2 m (RSSI better than −75), then retry with <i>bond first</i> ticked.</li>
         <li>If nothing arrives: try <span class="mono">gw.avl</span> alone, then handshake <i>HELLO/ACK</i>, then <i>Pair</i>.</li>
         <li>Compare inside temperature and target on the panel with the AC's remote/display.</li>
         <li>Only then enable writes: set target ±1 °C, watch the echoed PUBLISH, confirm on the AC.</li>
@@ -314,7 +316,7 @@
   $('#btn-scan').onclick = () => send({ cmd: 'scan', seconds: +$('#scan-seconds').value });
   $('#show-all').onchange = () => state.lastScan && renderDevices(state.lastScan);
   $('#devices').onclick = (e) => { const tr = e.target.closest('tr[data-a]'); if (!tr) return; $('#address').value = tr.dataset.a; if (tr.dataset.p) $('#protocol').value = tr.dataset.p; };
-  $('#btn-connect').onclick = () => { const a = $('#address').value.trim(); if (!a) return log('error', 'enter or pick an address'); send({ cmd: 'connect', address: a, protocol: $('#protocol').value, handshake: $('#handshake').value }); };
+  $('#btn-connect').onclick = () => { const a = $('#address').value.trim(); if (!a) return log('error', 'enter or pick an address'); send({ cmd: 'connect', address: a, protocol: $('#protocol').value, handshake: $('#handshake').value, pair: $('#pair-first').checked }); };
   $('#btn-disconnect').onclick = () => send({ cmd: 'disconnect' });
   $('#btn-pair').onclick = () => send({ cmd: 'pair' });
   $('#btn-ping').onclick = () => send({ cmd: 'ping' });

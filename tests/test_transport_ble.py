@@ -85,6 +85,17 @@ async def test_ddm2_uses_0400_characteristics() -> None:
     assert client.is_connected
 
 
+async def test_link_drop_during_start_notify_is_explained() -> None:
+    class Dropper(FakeBleakClient):
+        async def start_notify(self, char: Any, callback: Callable[..., Any]) -> None:
+            self._connected = False
+            raise OSError("Not Connected")
+
+    transport = BleTransport(Dropper(connected=True), Protocol.DDM2, owns_client=False)
+    with pytest.raises(TransportError, match="dropped the link while notifications"):
+        await transport.connect()
+
+
 async def test_not_owned_and_not_connected_is_an_error() -> None:
     transport = BleTransport(FakeBleakClient(), Protocol.DDM1, owns_client=False)
     with pytest.raises(TransportError, match="not connected"):

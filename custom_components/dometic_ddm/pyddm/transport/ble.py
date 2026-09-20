@@ -86,25 +86,31 @@ class BleTransport(Transport):
         return self._client
 
     async def connect(self) -> None:
-        try:
-            if not self._client.is_connected:
-                if not self._owns_client:
-                    raise TransportError("client is not connected")
+        if not self._client.is_connected:
+            if not self._owns_client:
+                raise TransportError("client is not connected")
+            try:
                 await self._client.connect()
-            mtu = self._client.mtu_size
-            if mtu < APP_REQUESTED_MTU:
-                _LOGGER.debug(
-                    "%s: negotiated MTU %d is below the app's requested %d "
-                    "(needs verification whether that matters)",
-                    self._protocol.value,
-                    mtu,
-                    APP_REQUESTED_MTU,
-                )
+            except Exception as err:  # bleak raises backend-specific exception types
+                raise TransportError(f"BLE connect failed: {err}") from err
+        mtu = self._client.mtu_size
+        if mtu < APP_REQUESTED_MTU:
+            _LOGGER.debug(
+                "%s: reported MTU %d is below the app's requested %d "
+                "(BlueZ reports 23 until the first write; needs verification whether it matters)",
+                self._protocol.value,
+                mtu,
+                APP_REQUESTED_MTU,
+            )
+        try:
             await self._client.start_notify(self._notify_uuid, self._on_gatt_notify)
-        except TransportError:
-            raise
-        except Exception as err:  # bleak raises backend-specific exception types
-            raise TransportError(f"BLE connect failed: {err}") from err
+        except Exception as err:
+            if not self._client.is_connected:
+                raise TransportError(
+                    f"device dropped the link while notifications were being enabled: {err} "
+                    "(weak signal or the device wants a bond first?)"
+                ) from err
+            raise TransportError(f"enabling notifications failed: {err}") from err
         self._notifying = True
 
     async def disconnect(self) -> None:
