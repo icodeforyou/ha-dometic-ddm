@@ -15,6 +15,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.dometic_ddm.const import CONF_PROTOCOL, DOMAIN
 
 from .fake_cfx3 import FakeCfx3Client
+from .fake_freshjet import FakeFreshJetClient
 
 CFX3_ADDRESS = "AA:BB:CC:DD:EE:01"
 CFX3_NAME = "CFX3 45"
@@ -60,11 +61,12 @@ def make_service_info(
 CFX3_SERVICE_INFO = make_service_info(
     address=CFX3_ADDRESS, name=CFX3_NAME, service_uuids=[DDM1_SERVICE]
 )
+FJZ7_NAME = "FJZ7 2600"
 FJZ7_SERVICE_INFO = make_service_info(
     address=FJZ7_ADDRESS,
-    name="SHE-2600",
+    name="SHE_366f0c",  # as advertised by the real unit (2026-09-20 scan)
     service_uuids=[DDM2_SERVICE],
-    manufacturer_data={0x0845: b"\x01\x02"},
+    manufacturer_data={0x0845: b"\x00"},
 )
 UNRELATED_SERVICE_INFO = make_service_info(
     address="AA:BB:CC:DD:EE:99",
@@ -117,3 +119,39 @@ def patched_ble(fake_cfx3: FakeCfx3Client) -> Generator[FakeCfx3Client]:
         patch("custom_components.dometic_ddm.coordinator.establish_connection", _establish),
     ):
         yield fake_cfx3
+
+
+@pytest.fixture
+def fjz7_entry() -> MockConfigEntry:
+    """A configured FreshJet FJZ7."""
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title=FJZ7_NAME,
+        unique_id=FJZ7_ADDRESS.lower(),
+        data={CONF_ADDRESS: FJZ7_ADDRESS, CONF_NAME: FJZ7_NAME, CONF_PROTOCOL: "ddm2"},
+    )
+
+
+@pytest.fixture
+def patched_ble_fjz7() -> Generator[FakeFreshJetClient]:
+    """Route the coordinator's BLE calls to the fake air conditioner."""
+    fake = FakeFreshJetClient(FJZ7_ADDRESS)
+
+    async def _establish(client_class, device, name, **kwargs):  # type: ignore[no-untyped-def]
+        fake.disconnected_callback = kwargs.get("disconnected_callback")
+        fake.pair_requested = kwargs.get("pair", False)
+        await fake.connect()
+        return fake
+
+    with (
+        patch(
+            "custom_components.dometic_ddm.coordinator.bluetooth.async_ble_device_from_address",
+            return_value=BLEDevice(FJZ7_ADDRESS, FJZ7_NAME, {}),
+        ),
+        patch(
+            "custom_components.dometic_ddm.coordinator.bluetooth.async_register_callback",
+            return_value=lambda: None,
+        ),
+        patch("custom_components.dometic_ddm.coordinator.establish_connection", _establish),
+    ):
+        yield fake

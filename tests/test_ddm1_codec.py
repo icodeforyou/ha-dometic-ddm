@@ -84,6 +84,14 @@ def test_int16_array_min_max() -> None:
     assert encode(T.INT16_ARRAY, (-22.0, 10.0)) == raw
 
 
+def test_history_no_sample_sentinel() -> None:
+    """A CFX3 fills empty slots with 0x8000 (captured 2026-09-20): decoded as None."""
+    raw = bytes.fromhex("A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3")
+    decoded = decode(T.HISTORY_DATA_ARRAY, raw)
+    assert decoded == HistoryData((16.8, 13.5, 15.5, None, None, None, None), 0xB3)
+    assert encode(T.HISTORY_DATA_ARRAY, decoded) == raw
+
+
 def test_history_data_array() -> None:
     values = (-18.0, -17.5, -17.0, -16.5, -16.0, -15.5, -15.0)
     raw = (

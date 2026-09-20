@@ -2,8 +2,7 @@
 
 Verifies on real bytes: the PING-first handshake, that device PINGs are ACKed, DDM1 topic
 layout, int16 LE deci-values, INT16_ARRAY, zero-terminated strings with leftover bytes after
-the terminator, the bulk-subscription frame, and that history arrays decode (the 0x8000
-"no sample" sentinel is still rendered as -3276.8, see the capture notes).
+the terminator, the bulk-subscription frame, and history arrays with the 0x8000 sentinel.
 """
 
 from __future__ import annotations
@@ -55,12 +54,12 @@ CAPTURED: list[tuple[str, str, object]] = [
     (
         "00 00 40 01 01 A8 00 87 00 9B 00 00 80 00 80 00 80 00 80 B3",
         "compartment.c0TemperatureHistoryHour",
-        HistoryData((16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8, -3276.8), 179),
+        HistoryData((16.8, 13.5, 15.5, None, None, None, None), 179),
     ),
     (
         "00 00 40 03 01 04 00 00 00 19 00 00 80 00 80 00 80 00 80 B3",
         "power.dcCurrentHistoryHour",
-        HistoryData((0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8, -3276.8), 179),
+        HistoryData((0.4, 0.0, 2.5, None, None, None, None), 179),
     ),
 ]
 

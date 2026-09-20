@@ -38,19 +38,50 @@ CFX3_SUBSCRIPTIONS: Final[tuple[tuple[str, str], ...]] = (
     ("power", "powerSource"),
 )
 
-# DDM2 "probe" subscriptions. No FJZ7 entities exist yet (open question 1: does the AC
-# class come over BLE?). Subscribing to these and logging what comes back is how that
-# question gets answered on real hardware.
-DDM2_PROBE_SUBSCRIPTIONS: Final[tuple[tuple[str, str], ...]] = (
+# FreshJet (DDM2 ``ac`` class + gateway identity). Every one of these was answered by a
+# FJZ7 2600 (fw 2.2.0) on 2026-09-20, see docs/captures/2026-09-20_fjz7_first-session.log.
+# ``etemp``, ``eco`` and ``flaps`` never answered on that unit and are left out; ``operst``
+# only publishes on change and is kept because the climate entity uses it.
+FJZ7_SUBSCRIPTIONS: Final[tuple[tuple[str, str], ...]] = (
     ("gw", "avl"),
     ("gw", "ver"),
-    ("gw", "ptype"),
+    ("gw", "sku"),
     ("ac", "avl"),
     ("ac", "mdl"),
+    ("ac", "ver"),
+    ("ac", "on"),
+    ("ac", "md"),
+    ("ac", "operst"),
+    ("ac", "ttemp"),
     ("ac", "itemp"),
+    ("ac", "fspd"),
+    ("ac", "fs"),
+    ("ac", "fmd"),
+    ("ac", "lgt"),
+    ("ac", "dmr"),
+    ("ac", "sleep"),
+    ("ac", "pwr"),
+    ("ac", "curr"),
+    ("ac", "currlim"),
+    ("ac", "status"),
+    ("ac", "actext"),
 )
 
-# UI fallback for the climate entity until the device has reported c0TemperatureRange.
+# ac.actext bitfield (dictionary): 1 Heater, 2 Compressor, 0x10 Inverter, 0x20 FanEvap.
+# Observed: 0x10 idle, 0x12 while cooling.
+AC_ACTEXT_HEATER: Final = 0x01
+AC_ACTEXT_COMPRESSOR: Final = 0x02
+
+# ac.fspd is an enum without names in the dictionary. Observed values on the FJZ7: 0 (Dry
+# mode), 2 (Fan mode), 5 (Auto mode with fan "On"). Exposed verbatim as fan modes; the
+# meaning of each level needs verification.
+AC_FAN_SPEEDS: Final[tuple[str, ...]] = ("0", "1", "2", "3", "4", "5")
+
+# UI fallback for the CFX3 climate entity until the device has reported c0TemperatureRange.
 # Not a protocol constant; CFX3 marketing range is roughly -22 °C to +10 °C.
 FALLBACK_MIN_TEMP_C: Final = -22.0
 FALLBACK_MAX_TEMP_C: Final = 10.0
+# UI range for the FreshJet target temperature. Not from the protocol (the dictionary has
+# no range for ac.ttemp); typical for the product class. Needs verification.
+FJZ7_MIN_TEMP_C: Final = 16.0
+FJZ7_MAX_TEMP_C: Final = 31.0

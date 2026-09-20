@@ -24,6 +24,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ADDRESS, CONF_NAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH, DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
@@ -31,14 +32,16 @@ from .const import (
     CONF_PAIR,
     CONF_PROTOCOL,
     CONNECT_MAX_ATTEMPTS,
-    DDM2_PROBE_SUBSCRIPTIONS,
     DOMAIN,
+    FJZ7_SUBSCRIPTIONS,
     HANDSHAKE_TIMEOUT_SECONDS,
+    MANUFACTURER,
     UPDATE_INTERVAL_SECONDS,
 )
 from .pyddm import Protocol, Session, SessionError, Update
 from .pyddm.ddm1 import default_table as ddm1_table
 from .pyddm.ddm2 import default_table as ddm2_table
+from .pyddm.session import DDM1_HANDSHAKE_WITH_PING, DDM2_HANDSHAKE_NONE
 from .pyddm.transport.base import TransportError
 from .pyddm.transport.ble import BleTransport
 
@@ -57,10 +60,12 @@ class DometicDdmCoordinator(DataUpdateCoordinator[DdmData]):
         self.address: str = entry.data[CONF_ADDRESS]
         self.device_name: str = entry.data.get(CONF_NAME) or self.address
         self.protocol = Protocol(entry.data[CONF_PROTOCOL])
-        # Bonding: the app bonds a CFX3 on Android; whether we must (and whether a bond
-        # survives an HA restart through an ESPHome proxy) is open question 2. Default to
-        # trying for DDM1 only; bleak-retry-connector pairs on backends that support it.
-        self._pair: bool = entry.options.get(CONF_PAIR, self.protocol is Protocol.DDM1)
+        # Bonding is mandatory: both a FreshJet and a CFX3 drop unbonded centrals within a
+        # few seconds (verified 2026-09-20). bleak's BlueZ backend pairs *before* opening the
+        # link when asked, which is the sequence the devices accept; the device must be in
+        # its pairing mode the first time, afterwards the bond is reused. Whether a bond
+        # survives an HA restart through an ESPHome proxy is open question 2.
+        self._pair: bool = entry.options.get(CONF_PAIR, True)
         super().__init__(
             hass,
             _LOGGER,
@@ -94,13 +99,54 @@ class DometicDdmCoordinator(DataUpdateCoordinator[DdmData]):
             return ddm1_table().topic_for(group, name)
         return ddm2_table().topic_for(group, name)
 
+    def enum_name(self, class_name: str, name: str) -> str | None:
+        """Dictionary enum name of a DDM2 parameter's current value, or None."""
+        value = self.value(class_name, name)
+        if self.protocol is not Protocol.DDM2 or not isinstance(value, int):
+            return None
+        return ddm2_table().get(class_name, name).enum_name(value)
+
+    def device_info(self) -> DeviceInfo:
+        """Device registry entry, filled in as identification parameters arrive."""
+        info = DeviceInfo(
+            identifiers={(DOMAIN, self.address)},
+            connections={(CONNECTION_BLUETOOTH, self.address)},
+            name=self.device_name,
+            manufacturer=MANUFACTURER,
+        )
+        if self.protocol is Protocol.DDM1:
+            model = self.value("productInformation", "productModelNumber")
+            firmware = self.value("deviceSpecific", "ccFirmwareVersion")
+            serial = self.value("productInformation", "productSerialNumber")
+            info["model"] = str(model) if model else "CFX3"
+            if firmware:
+                info["sw_version"] = str(firmware)
+            if serial:
+                info["serial_number"] = str(serial)
+            return info
+        info["model"] = self.enum_name("ac", "mdl") or "FreshJet"
+        if firmware := self.value("ac", "ver"):
+            info["sw_version"] = str(firmware)
+        if gateway := self.value("gw", "ver"):
+            info["hw_version"] = f"gateway {gateway}"
+        if sku := self.value("gw", "sku"):
+            info["model_id"] = str(sku)
+        if serial := self.value("gw", "dsn"):
+            info["serial_number"] = str(serial)
+        return info
+
     async def async_write(self, group: str, name: str, value: Any) -> None:
         """Write one parameter (DDM1 PUBLISH / DDM2 SET)."""
         session = self._session
         if session is None or not self.connected:
             raise HomeAssistantError(f"{self.device_name} is not connected")
+        topic = self.topic(group, name)
         try:
-            await session.write(self.topic(group, name), value)
+            await session.write(topic, value)
+            if self.protocol is Protocol.DDM1:
+                # A CFX3 ACKs and applies a write but does not publish the new value on its
+                # own (verified 2026-09-20); a FreshJet echoes it. Ask for it explicitly.
+                await session.subscribe(topic)
         except (SessionError, TransportError, ValueError) as err:
             raise HomeAssistantError(f"Write to {group}.{name} failed: {err}") from err
 
@@ -162,6 +208,11 @@ class DometicDdmCoordinator(DataUpdateCoordinator[DdmData]):
         session = Session(
             self.protocol,
             transport,
+            # CFX3: client opens with PING, ACKs every device PING (or nothing is published).
+            # FreshJet: no handshake at all. Both verified 2026-09-20.
+            handshake=(
+                DDM1_HANDSHAKE_WITH_PING if self.protocol is Protocol.DDM1 else DDM2_HANDSHAKE_NONE
+            ),
             on_update=self._on_update,
             on_error=self._on_session_error,
             logger=_LOGGER,
@@ -174,7 +225,8 @@ class DometicDdmCoordinator(DataUpdateCoordinator[DdmData]):
             await self._async_close_session()
             raise UpdateFailed(
                 f"{self.device_name} did not complete the {self.protocol.value.upper()} handshake "
-                f"within {HANDSHAKE_TIMEOUT_SECONDS}s (is the cooler bonded / in pairing mode?)"
+                f"within {HANDSHAKE_TIMEOUT_SECONDS}s (is the device bonded? put it in pairing "
+                "mode and reload)"
             ) from err
         except (TransportError, SessionError) as err:
             await self._async_close_session()
@@ -184,7 +236,7 @@ class DometicDdmCoordinator(DataUpdateCoordinator[DdmData]):
     def _subscriptions(self) -> tuple[tuple[str, str], ...]:
         if self.protocol is Protocol.DDM1:
             return CFX3_SUBSCRIPTIONS
-        return DDM2_PROBE_SUBSCRIPTIONS
+        return FJZ7_SUBSCRIPTIONS
 
     async def _async_close_session(self) -> None:
         session, self._session = self._session, None
@@ -199,15 +251,9 @@ class DometicDdmCoordinator(DataUpdateCoordinator[DdmData]):
 
     @callback
     def _on_update(self, update: Update) -> None:
-        if self.protocol is Protocol.DDM2:
-            # Probe mode: nothing consumes DDM2 values yet, make them visible in the log.
-            _LOGGER.info(
-                "%s: %s = %r (raw %s)",
-                self.device_name,
-                update.name,
-                update.value,
-                update.raw.hex(" "),
-            )
+        _LOGGER.debug(
+            "%s: %s = %r (raw %s)", self.device_name, update.name, update.value, update.raw.hex(" ")
+        )
         new_data = dict(self.data)
         new_data[update.name] = update
         self.async_set_updated_data(new_data)

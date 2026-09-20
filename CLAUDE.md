@@ -85,9 +85,14 @@ every protocol experiment before touching the integration; save frame logs under
 - **CFX3 (DDM1)**: **client opens with PING** `02` → `04` → `03` → `04` (docs had the order
   wrong). Cooler PINGs every 2 s and **publishes nothing until each PING is ACKed** (pyddm
   does this by default now). Individual SUBSCRIBEs then answer immediately; bulk topics
-  `01/02/03 00 00 81` work too (open question 3: yes). Cooler is silent for ~1 min after a
-  disconnect before advertising again; bleak must be given BlueZ's device object, not a
-  string address, or connects time out.
+  `01/02/03 00 00 81` work too (open question 3: yes). **Writes are ACKed and applied but not
+  echoed** → the coordinator re-SUBSCRIBEs the topic after every DDM1 write. Cooler is silent
+  for ~1 min after a disconnect before advertising again; bleak must be given BlueZ's device
+  object, not a string address, or connects time out. HISTORY arrays: `0x8000` = no sample.
+
+Integration status: entities exist for the FreshJet (climate, light, sleep switch, sensors,
+binary sensors) and the CFX3 (climate, sensors, binary sensors, select), both backed by
+simulators replaying the captured frames (`tests/components/dometic_ddm/fake_*.py`).
 
 ## Open questions (do not silently assume)
 

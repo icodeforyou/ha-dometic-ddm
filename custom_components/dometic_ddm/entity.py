@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH, DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, MANUFACTURER
 from .coordinator import DometicDdmCoordinator
 
 
@@ -20,19 +19,7 @@ class DometicDdmEntity(CoordinatorEntity[DometicDdmCoordinator]):
 
     @property
     def device_info(self) -> DeviceInfo:
-        coordinator = self.coordinator
-        model = coordinator.value("productInformation", "productModelNumber")
-        firmware = coordinator.value("deviceSpecific", "ccFirmwareVersion")
-        serial = coordinator.value("productInformation", "productSerialNumber")
-        return DeviceInfo(
-            identifiers={(DOMAIN, coordinator.address)},
-            connections={(CONNECTION_BLUETOOTH, coordinator.address)},
-            name=coordinator.device_name,
-            manufacturer=MANUFACTURER,
-            model=str(model) if model else "CFX3" if coordinator.protocol.value == "ddm1" else None,
-            sw_version=str(firmware) if firmware else None,
-            serial_number=str(serial) if serial else None,
-        )
+        return self.coordinator.device_info()
 
     @property
     def available(self) -> bool:
@@ -40,3 +27,17 @@ class DometicDdmEntity(CoordinatorEntity[DometicDdmCoordinator]):
 
     def _value(self, group: str, name: str) -> object:
         return self.coordinator.value(group, name)
+
+    def _int(self, group: str, name: str) -> int | None:
+        value = self.coordinator.value(group, name)
+        return int(value) if isinstance(value, int) and not isinstance(value, bool) else None
+
+    def _float(self, group: str, name: str) -> float | None:
+        value = self.coordinator.value(group, name)
+        return (
+            float(value) if isinstance(value, int | float) and not isinstance(value, bool) else None
+        )
+
+    def _bool(self, group: str, name: str) -> bool | None:
+        value = self.coordinator.value(group, name)
+        return bool(value) if isinstance(value, bool | int) else None

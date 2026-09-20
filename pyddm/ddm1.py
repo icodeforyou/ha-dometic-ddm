@@ -67,14 +67,20 @@ class DDM1Type(StrEnum):
     EMPTY = "EMPTY"
 
 
+HISTORY_NO_SAMPLE: Final = -32768
+"""Raw int16 a CFX3 puts in history slots that have no sample yet (verified 2026-09-20)."""
+
+
 @dataclass(frozen=True, slots=True)
 class HistoryData:
-    """Decoded HISTORY_DATA_ARRAY: seven deci-scaled int16 values and one trailing byte.
+    """Decoded HISTORY_DATA_ARRAY: seven deci-scaled int16 samples and one trailing byte.
 
-    The meaning of the trailing byte is not documented in the app; it is passed through.
+    Samples are newest first; ``None`` marks an empty slot (raw ``0x8000``). The trailing
+    byte is a counter the cooler advances over time (minutes for the day array); it is
+    passed through unchanged. Verified on a CFX3 on 2026-09-20.
     """
 
-    values: tuple[float, ...]
+    values: tuple[float | None, ...]
     trailer: int
 
 
@@ -131,9 +137,10 @@ def encode(kind: DDM1Type, value: DDM1Value) -> bytes:
                 raise CodecError(
                     f"HISTORY_DATA_ARRAY needs HistoryData with 7 values, got {value!r}"
                 )
-            return b"".join(_deci_to_bytes(v, "history") for v in value.values) + struct.pack(
-                "<B", value.trailer
-            )
+            return b"".join(
+                _INT16.pack(HISTORY_NO_SAMPLE) if v is None else _deci_to_bytes(v, "history")
+                for v in value.values
+            ) + struct.pack("<B", value.trailer)
         case DDM1Type.UTF8_STRING:
             if not isinstance(value, str):
                 raise CodecError(f"UTF8_STRING needs a str, got {value!r}")
@@ -172,7 +179,10 @@ def decode(kind: DDM1Type, data: bytes) -> DDM1Value:
         case DDM1Type.HISTORY_DATA_ARRAY:
             _expect_length(kind, data, HISTORY_LENGTH)
             *values, trailer = _HISTORY.unpack(data)
-            return HistoryData(tuple(int(v) / 10 for v in values), int(trailer))
+            return HistoryData(
+                tuple(None if int(v) == HISTORY_NO_SAMPLE else int(v) / 10 for v in values),
+                int(trailer),
+            )
         case DDM1Type.UTF8_STRING:
             if len(data) > STRING_MAX_LENGTH:
                 raise CodecError(

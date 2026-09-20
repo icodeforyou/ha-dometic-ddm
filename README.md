@@ -5,11 +5,10 @@ data model over Bluetooth LE: the **CFX3** compressor cooler (DDM1) first, the
 **FreshJet FJZ7 2600** roof air conditioner (DDM2) next, and eventually anything else in the
 DDM2 dictionary (CFX5, batteries, inverters, heaters, …) by adding a device profile.
 
-> **Status: pre-alpha, not hardware-verified.**
-> Everything here is derived from decompiling the official *Dometic Power* app (v2.2.8).
-> No frame in this repository has yet been observed on a real device. Anything that depends
-> on device behaviour is marked *needs verification* in code comments. Do not expect it to
-> work on your cooler yet; do expect it to be a solid, tested starting point.
+> **Status: alpha, hardware-tested once.** Read and write paths were verified against a
+> real FreshJet FJZ7 2600 and a CFX3 (CFX335) on 2026-09-20 from a laptop; see
+> `docs/captures/`. Not yet tested on a Raspberry Pi or through an ESPHome proxy, not yet
+> tested over days. Anything still guessed is marked *needs verification* in the code.
 
 ## What is in the repo
 
@@ -45,51 +44,46 @@ Keep the vendored copy current with `python scripts/sync_vendored.py`; a test fa
 is stale. Once `pyddm` is on PyPI the copy goes away and `manifest.json` lists it under
 `requirements`.
 
-## What works (in tests) and what is guessed
+## Supported devices and entities
 
-**CFX3 (DDM1).** Config flow via Bluetooth discovery (local name `CFX3*` or service
-`537a0300-…`), a coordinator that connects with `bleak-retry-connector`, runs the handshake
-`04 → 03 → 04`, subscribes to individual topics and ACKs every PUBLISH. Entities for
-compartment 0 only: climate (target temperature, on/off), temperature and battery voltage
-sensors, door and compressor binary sensors, battery protection select. Dual-zone (`c1…`)
-entities are not created yet.
+One integration, one config entry per device. The protocol (DDM1 or DDM2) is detected at
+discovery and selects the device profile.
 
-**FreshJet FJZ7 (DDM2).** Discovered (manufacturer id `0x0845` or service `537a0400-…`) and
-connected in *probe mode*: it subscribes to a handful of gateway and AC topics and logs
-every value it receives at INFO level. No entities. The point is to answer open question 1
-(is the AC class reachable over BLE at all?) the first time a real unit is in range.
+| Device | Protocol | Entities |
+|---|---|---|
+| **FreshJet FJZ7 2600** (and other `SHE_…` FreshJet units, untested) | DDM2 | climate (off / cool / heat / fan only / auto / dry, target temperature, fan speed 0–5), light with dimmer, sleep switch, sensors: inside temperature, power, current, operating state; binary sensors: compressor running, error |
+| **CFX3** single zone (CFX335 tested; other CFX3 sizes should behave the same) | DDM1 | climate for the compartment (on / off, target temperature), sensors: temperature, battery voltage; binary sensors: door, compressor; battery protection select |
 
-Things the code assumes but nobody has seen on a device yet, all marked
-*needs verification* in comments:
+Dual-zone CFX3 (`c1…` topics) and other DDM2 devices (CFX5, batteries, …) are not exposed
+yet; the protocol layer already decodes them.
 
-- the DDM1 handshake order and that every PUBLISH must be ACKed (from app code);
-- that a CFX3 needs a BLE bond; the integration asks `bleak-retry-connector` to pair on
-  DDM1 connections and whether that survives an HA restart through an ESPHome proxy;
-- the meaning of the bulk-subscription topic `01 00 00 81` (not used by default);
-- DDM2 handshake: default is *none* (the hardware-verified CFX5 implementation does not
-  do one), the HELLO/ACK variant exists as `DDM2_HANDSHAKE_LIKE_DDM1`;
-- the DDM2 STRUCT byte layout, interpreted from the dictionary's `struct` field;
-- enum names for DDM1 battery protection / power source (lifted from the DDM2 dictionary);
-- the local WiFi TCP transport (base64 lines, `\r`), including its port, which the app
-  source does not name.
+## Pairing (read this before adding a device)
 
-## Testing from a laptop, without Home Assistant
+Both devices refuse any Bluetooth client they are not bonded with and drop the link within
+a few seconds. Bonding is only possible while the device is in its pairing mode:
 
-`tools/ac_console` is a local web console that drives the same `pyddm` session over this
-machine's Bluetooth adapter (BlueZ via bleak). It is the tool for the first hardware
-session and for showing the device owner what the integration will do:
+- **FreshJet**: press the pairing button combination on the unit (see the unit's manual;
+  the AC is only pairable for a short window).
+- **CFX3**: open the cooler's menu and start Bluetooth pairing; the Bluetooth icon blinks
+  for about a minute.
 
-```sh
-uv run python -m tools.ac_console          # then open http://127.0.0.1:8765/
-uv run python -m tools.ac_console -v       # also hex-dumps every frame to the terminal
-```
+Then add the integration (or reload it) while the window is open. Home Assistant bonds
+during connection setup. Afterwards the bond is reused. Only one client can be connected at
+a time, so close the Dometic app on any phone nearby. After a disconnect a CFX3 stays
+invisible for about a minute before it can be found again.
 
-Scan, pick the device, connect, **Subscribe dashboard**. The page shows a FreshJet panel
-(inside/outside/target temperature, power, mode, fan, light, errors …) or the CFX3 values,
-a table of everything received, and a frame log with every byte in both directions and
-its decoding. Writes (power, mode, target temperature, fan, light, any parameter, raw
-frames) are disabled until you tick *Enable writes*; every write is logged. Handshake
-variants and BLE pairing are selectable because both are unverified.
+## Verified behaviour and remaining guesses
+
+Verified on hardware (2026-09-20): frame format and codecs for both protocols; DDM2 needs no
+handshake and echoes every write; DDM1 is opened by the client with PING, the cooler pings
+every two seconds and publishes only while those pings are acknowledged, and it applies
+writes without echoing them (the integration re-reads after each write); bulk subscription
+topics work; changes made on the remote or the cooler's own buttons are pushed.
+
+Still to verify: bond persistence across HA restarts and through an ESPHome proxy; the
+FreshJet power reading (`ac.pwr`, looks 10× too small); the meaning of fan speed levels
+0–5; whether the dimmer really dims; the battery protection and power source enum names on
+the CFX3 (borrowed from the DDM2 dictionary).
 
 ## Hardware bring-up plan
 

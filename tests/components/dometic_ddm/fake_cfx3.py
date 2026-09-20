@@ -1,16 +1,16 @@
-"""A CFX3 simulator behind a bleak-like client, following docs/dometic-power-protokoll.md.
+"""A CFX3 simulator behind a bleak-like client, behaving like the real CFX335 did on
+2026-09-20 (docs/captures/2026-09-20_cfx3_first-session.md):
 
-Behaviour (all "needs verification" against a real cooler, this encodes the docs):
-* ACK (04) is notified as soon as notifications are enabled.
-* HELLO (03) is answered with ACK (04).
-* SUBSCRIBE (01 + topic) is answered with a PUBLISH of the current value for that topic.
-* PUBLISH (00 + topic + value) from the client is treated as a write: the value is stored
-  and echoed back as a PUBLISH, like a device confirming the new state.
+* The cooler says nothing after notifications are enabled. The client must send PING (02);
+  the cooler answers ACK (04). HELLO (03) is answered with ACK.
+* Once the session is up the cooler PINGs the client; it only answers SUBSCRIBEs with a
+  PUBLISH after the client has ACKed at least one of those PINGs.
+* A PUBLISH from the client (a write) is ACKed and applied but NOT echoed; a later
+  SUBSCRIBE returns the new value.
 """
 
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Callable
 from typing import Any
 
@@ -29,19 +29,19 @@ def _initial_state() -> dict[bytes, bytes]:
 
     return dict(
         [
-            enc("productInformation", "productModelNumber", "CFX3 45"),
-            enc("productInformation", "productSerialNumber", "SN123456"),
+            enc("productInformation", "productModelNumber", "CFX335"),
+            enc("productInformation", "productSerialNumber", "44304345"),
             enc("productInformation", "productType", 1),
-            enc("deviceSpecific", "ccFirmwareVersion", "1.2.3"),
+            enc("deviceSpecific", "ccFirmwareVersion", "V3.510+DD2.2"),
             enc("compartment", "c0Power", True),
-            enc("compartment", "c0MeasuredTemperature", -24.6),
-            enc("compartment", "c0SetTemperature", -18.0),
+            enc("compartment", "c0MeasuredTemperature", 18.0),
+            enc("compartment", "c0SetTemperature", 2.0),
             enc("compartment", "c0DoorOpen", False),
-            enc("compartment", "c0TemperatureRange", (-22.0, 10.0)),
+            enc("compartment", "c0TemperatureRange", (-22.0, 20.0)),
             enc("power", "coolerPower", True),
-            enc("power", "batteryVoltageLevel", 12.6),
+            enc("power", "batteryVoltageLevel", 13.2),
             enc("power", "batteryProtectionLevel", 1),
-            enc("power", "compressorPower", True),
+            enc("power", "compressorPower", False),
             enc("power", "powerSource", 1),
         ]
     )
@@ -55,12 +55,13 @@ class FakeCfx3Client:
         self.state: dict[bytes, bytes] = _initial_state()
         self.writes: list[bytes] = []
         self.acks_received = 0
-        self.mtu_size = 153
+        self.mtu_size = 23
         self.pair_requested = False
         self.disconnected_callback: Callable[[Any], None] | None = None
         self._connected = False
         self._notify: Callable[[Any, bytearray], None] | None = None
-        self.hello_seen = asyncio.Event()
+        self._hello_done = False
+        self._pinged_client = False
 
     # -- bleak API -----------------------------------------------------------------
 
@@ -75,12 +76,14 @@ class FakeCfx3Client:
     async def disconnect(self) -> bool:
         self._connected = False
         self._notify = None
+        self._hello_done = False
+        self._pinged_client = False
+        self.acks_received = 0
         return True
 
     async def start_notify(self, char: Any, callback: Callable[[Any, bytearray], None]) -> None:
         assert str(char) == DDM1_NOTIFY
-        self._notify = callback
-        self._emit(b"\x04")  # device speaks first
+        self._notify = callback  # the real cooler stays silent here
 
     async def stop_notify(self, char: Any) -> None:
         self._notify = None
@@ -90,19 +93,26 @@ class FakeCfx3Client:
         frame = bytes(data)
         self.writes.append(frame)
         action = frame[0]
-        if action == 0x03:  # HELLO
-            self.hello_seen.set()
+        if action == 0x02:  # PING from the client
             self._emit(b"\x04")
-        elif action == 0x04:  # ACK for a publish
+        elif action == 0x03:  # HELLO
+            self._hello_done = True
+            self._emit(b"\x04")
+            # session up: the cooler starts its 2 s keepalive; first one right away
+            self._emit(b"\x02")
+            self._pinged_client = True
+        elif action == 0x04:  # ACK (for our PING or PUBLISH)
             self.acks_received += 1
         elif action == 0x01 and len(frame) == 5:  # SUBSCRIBE
+            self._emit(b"\x04")
+            if self._pinged_client and self.acks_received == 0:
+                return  # real cooler: silent until its PINGs are ACKed
             topic = frame[1:5]
             if topic in self.state:
                 self._emit(b"\x00" + topic + self.state[topic])
-        elif action == 0x00 and len(frame) >= 5:  # PUBLISH = write
-            topic, value = frame[1:5], frame[5:]
-            self.state[topic] = value
-            self._emit(b"\x00" + topic + value)
+        elif action == 0x00 and len(frame) >= 5:  # PUBLISH = write: ACK + apply, no echo
+            self.state[frame[1:5]] = frame[5:]
+            self._emit(b"\x04")
 
     # -- test helpers ---------------------------------------------------------------
 
@@ -111,6 +121,10 @@ class FakeCfx3Client:
         p = _T.get(group, name)
         self.state[p.topic] = p.encode(value)
         self._emit(b"\x00" + p.topic + self.state[p.topic])
+
+    def ping(self) -> None:
+        """Keepalive PING from the cooler."""
+        self._emit(b"\x02")
 
     def drop_link(self) -> None:
         """Simulate the cooler going out of range."""

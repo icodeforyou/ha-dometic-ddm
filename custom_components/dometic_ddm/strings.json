@@ -10,7 +10,7 @@
       },
       "bluetooth_confirm": {
         "title": "Dometic device found",
-        "description": "Set up {name} ({address}, protocol {protocol})?\n\nThis integration is pre-alpha and not yet verified against hardware. For a CFX3, put the cooler in Bluetooth pairing mode first."
+        "description": "Set up {name} ({address}, protocol {protocol})?\n\nThe device must be bonded with this Home Assistant host once. Put it in Bluetooth pairing mode before you submit: on a FreshJet air conditioner use the pairing button combination on the unit, on a CFX3 cooler enable Bluetooth pairing in its menu. Without pairing mode the device drops the connection within a second."
       }
     },
     "abort": {
@@ -23,10 +23,28 @@
   "entity": {
     "binary_sensor": {
       "door": { "name": "Door" },
-      "compressor": { "name": "Compressor" }
+      "compressor": { "name": "Compressor" },
+      "problem": { "name": "Error" }
     },
     "climate": {
-      "compartment": { "name": "Compartment" }
+      "compartment": { "name": "Compartment" },
+      "air_conditioner": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "0": "Speed 0",
+              "1": "Speed 1",
+              "2": "Speed 2",
+              "3": "Speed 3",
+              "4": "Speed 4",
+              "5": "Speed 5"
+            }
+          }
+        }
+      }
+    },
+    "light": {
+      "light": { "name": "Light" }
     },
     "select": {
       "battery_protection": {
@@ -40,7 +58,21 @@
     },
     "sensor": {
       "measured_temperature": { "name": "Temperature" },
-      "battery_voltage": { "name": "Battery voltage" }
+      "battery_voltage": { "name": "Battery voltage" },
+      "inside_temperature": { "name": "Inside temperature" },
+      "power": { "name": "Power" },
+      "current": { "name": "Current" },
+      "operating_state": {
+        "name": "Operating state",
+        "state": {
+          "fan_only": "Fan only",
+          "cooling": "Cooling",
+          "heating": "Heating"
+        }
+      }
+    },
+    "switch": {
+      "sleep": { "name": "Sleep mode" }
     }
   }
 }

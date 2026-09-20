@@ -63,38 +63,38 @@ async def test_setup_runs_handshake_and_creates_entities(
     await _setup(hass, cfx3_entry)
     assert cfx3_entry.state is ConfigEntryState.LOADED
 
-    # Handshake per docs: device 04 → we 03 → device 04, then one SUBSCRIBE per topic,
-    # and an ACK for every PUBLISH the device sent.
-    assert patched_ble.writes[0] == b"\x03"
+    # Handshake as verified on hardware: we 02 → cooler 04 → we 03 → cooler 04, then one
+    # SUBSCRIBE per topic, and an ACK for every PUBLISH and every PING the cooler sent.
+    assert patched_ble.writes[:2] == [b"\x02", b"\x03"]
     subscribes = [w for w in patched_ble.writes if w[0] == 0x01]
     assert len(subscribes) == len(CFX3_SUBSCRIPTIONS)
     assert subscribes[0] == bytes([0x01, 0x00, 0xC0, 0x00, 0x00])  # productModelNumber first
     assert b"\x01\x01\x00\x00\x81" not in patched_ble.writes  # bulk topic not used by default
-    assert patched_ble.acks_received == len(CFX3_SUBSCRIPTIONS)
-    assert patched_ble.pair_requested is True  # DDM1 defaults to bonding (open question 2)
+    assert patched_ble.acks_received == len(CFX3_SUBSCRIPTIONS) + 1  # + the cooler's PING
+    assert patched_ble.pair_requested is True  # bonding is mandatory
 
-    assert hass.states.get(TEMP).state == "-24.6"
-    assert hass.states.get(VOLTAGE).state == "12.6"
+    assert hass.states.get(TEMP).state == "18.0"
+    assert hass.states.get(VOLTAGE).state == "13.2"
     assert hass.states.get(DOOR).state == STATE_OFF
-    assert hass.states.get(COMPRESSOR).state == STATE_ON
+    assert hass.states.get(COMPRESSOR).state == STATE_OFF
     assert hass.states.get(PROTECTION).state == "medium"
 
     climate = hass.states.get(CLIMATE)
     assert climate.state == HVACMode.COOL
-    assert climate.attributes[ATTR_TEMPERATURE] == -18.0
-    assert climate.attributes["current_temperature"] == -24.6
-    assert climate.attributes[ATTR_HVAC_ACTION] == HVACAction.COOLING
+    assert climate.attributes[ATTR_TEMPERATURE] == 2.0
+    assert climate.attributes["current_temperature"] == 18.0
+    assert climate.attributes[ATTR_HVAC_ACTION] == HVACAction.IDLE
     assert climate.attributes[ATTR_MIN_TEMP] == -22.0
-    assert climate.attributes[ATTR_MAX_TEMP] == 10.0
+    assert climate.attributes[ATTR_MAX_TEMP] == 20.0
 
     device = dr.async_get(hass).async_get_device_by_identifier(
         (DOMAIN, CFX3_ADDRESS), cfx3_entry.entry_id
     )
     assert device is not None
     assert device.manufacturer == "Dometic"
-    assert device.model == "CFX3 45"
-    assert device.sw_version == "1.2.3"
-    assert device.serial_number == "SN123456"
+    assert device.model == "CFX335"
+    assert device.sw_version == "V3.510+DD2.2"
+    assert device.serial_number == "44304345"
 
 
 async def test_pushed_updates_reach_entities(
@@ -102,12 +102,18 @@ async def test_pushed_updates_reach_entities(
 ) -> None:
     await _setup(hass, cfx3_entry)
     patched_ble.publish("compartment", "c0DoorOpen", True)
-    patched_ble.publish("compartment", "c0MeasuredTemperature", -20.1)
-    patched_ble.publish("power", "compressorPower", False)
+    patched_ble.publish("compartment", "c0MeasuredTemperature", 13.0)
+    patched_ble.publish("power", "compressorPower", True)
     await hass.async_block_till_done()
     assert hass.states.get(DOOR).state == STATE_ON
-    assert hass.states.get(TEMP).state == "-20.1"
-    assert hass.states.get(CLIMATE).attributes[ATTR_HVAC_ACTION] == HVACAction.IDLE
+    assert hass.states.get(TEMP).state == "13.0"
+    assert hass.states.get(COMPRESSOR).state == STATE_ON
+    assert hass.states.get(CLIMATE).attributes[ATTR_HVAC_ACTION] == HVACAction.COOLING
+    # keepalive PINGs from the cooler are answered with ACK
+    acks = patched_ble.acks_received
+    patched_ble.ping()
+    await hass.async_block_till_done()
+    assert patched_ble.acks_received == acks + 1
 
 
 async def test_climate_writes_publish_frames(
@@ -123,9 +129,11 @@ async def test_climate_writes_publish_frames(
         blocking=True,
     )
     await hass.async_block_till_done()
-    # DDM1 writes with PUBLISH: 00 + topic c0SetTemperature + int16 LE 40 (= 4.0 °C)
+    # DDM1 writes with PUBLISH: 00 + topic c0SetTemperature + int16 LE 40 (= 4.0 °C).
+    # The cooler does not echo a write, so the coordinator re-subscribes the topic.
     assert patched_ble.writes[0] == bytes([0x00, 0x00, 0x02, 0x01, 0x01, 0x28, 0x00])
-    assert hass.states.get(CLIMATE).attributes[ATTR_TEMPERATURE] == 4.0  # echoed by device
+    assert patched_ble.writes[1] == bytes([0x01, 0x00, 0x02, 0x01, 0x01])
+    assert hass.states.get(CLIMATE).attributes[ATTR_TEMPERATURE] == 4.0
 
     await hass.services.async_call(
         CLIMATE_DOMAIN,
@@ -152,6 +160,7 @@ async def test_select_writes_enum_value(
     )
     await hass.async_block_till_done()
     assert patched_ble.writes[0] == bytes([0x00, 0x00, 0x02, 0x03, 0x01, 0x02])
+    assert patched_ble.writes[1] == bytes([0x01, 0x00, 0x02, 0x03, 0x01])  # re-read after write
     assert hass.states.get(PROTECTION).state == "high"
 
 
@@ -163,8 +172,8 @@ async def test_disconnect_reconnects_immediately(
     patched_ble.drop_link()
     await hass.async_block_till_done()
     # A fresh connection with a fresh handshake, no manual intervention.
-    assert patched_ble.writes[0] == b"\x03"
-    assert hass.states.get(TEMP).state == "-24.6"
+    assert patched_ble.writes[:2] == [b"\x02", b"\x03"]
+    assert hass.states.get(TEMP).state == "18.0"
 
 
 async def test_disconnect_out_of_range_marks_unavailable_then_recovers(
@@ -187,8 +196,8 @@ async def test_disconnect_out_of_range_marks_unavailable_then_recovers(
     patched_ble.writes.clear()
     await coordinator.async_refresh()
     await hass.async_block_till_done()
-    assert patched_ble.writes[0] == b"\x03"
-    assert hass.states.get(TEMP).state == "-24.6"
+    assert patched_ble.writes[:2] == [b"\x02", b"\x03"]
+    assert hass.states.get(TEMP).state == "18.0"
 
 
 async def test_setup_retries_when_out_of_range(
@@ -213,10 +222,10 @@ async def test_setup_retries_when_out_of_range(
 async def test_setup_retries_on_handshake_timeout(
     hass: HomeAssistant, cfx3_entry: MockConfigEntry, patched_ble: FakeCfx3Client
 ) -> None:
-    async def silent_start_notify(char: object, callback: object) -> None:
-        return  # device never sends its ACK
+    async def deaf_write(char: object, data: object, response: object = None) -> None:
+        return  # cooler never answers our PING
 
-    patched_ble.start_notify = silent_start_notify  # type: ignore[method-assign]
+    patched_ble.write_gatt_char = deaf_write  # type: ignore[method-assign]
     cfx3_entry.add_to_hass(hass)
     with patch("custom_components.dometic_ddm.coordinator.HANDSHAKE_TIMEOUT_SECONDS", 0.05):
         assert not await hass.config_entries.async_setup(cfx3_entry.entry_id)
