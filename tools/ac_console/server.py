@@ -322,6 +322,60 @@ async def ble_connector(address: str, protocol: Protocol, console: Console) -> T
     return BleTransport(client, protocol, owns_client=True)
 
 
+async def bluez_pair_unconnected(address: str, console: Console) -> None:
+    """Bond with a device BlueZ has seen but that is not connected.
+
+    Mirrors what bleak's BlueZ backend does on an open link (set Trusted, call
+    ``Device1.Pair``), except that BlueZ opens the link itself and bonds during connection
+    setup. That is what a device that drops unbonded peers during service discovery needs.
+    Uses bleak's private D-Bus manager; acceptable in this dev tool, not in the integration.
+    """
+    from bleak.backends.bluezdbus import defs  # noqa: PLC0415
+    from bleak.backends.bluezdbus.manager import get_global_bluez_manager  # noqa: PLC0415
+    from bleak.backends.bluezdbus.utils import assert_reply  # noqa: PLC0415
+    from dbus_fast import Message, Variant  # noqa: PLC0415
+
+    manager = await get_global_bluez_manager()
+    suffix = "/dev_" + address.upper().replace(":", "_")
+    paths = [p for p in manager._properties if p.endswith(suffix)]
+    if not paths:
+        raise TransportError(f"BlueZ has no device object for {address}; run a scan first")
+    device_path = paths[0]
+    bus = manager._bus
+    assert bus is not None
+    if manager.is_paired(device_path):
+        console.log("info", f"{address} is already bonded in BlueZ")
+        return
+    console.log("info", f"Bonding with {address} via BlueZ (link will be opened by BlueZ) …")
+    try:
+        reply = await bus.call(
+            Message(
+                destination=defs.BLUEZ_SERVICE,
+                path=device_path,
+                interface=defs.PROPERTIES_INTERFACE,
+                member="Set",
+                signature="ssv",
+                body=[defs.DEVICE_INTERFACE, "Trusted", Variant("b", True)],
+            )
+        )
+        assert_reply(reply)
+        async with asyncio.timeout(60):
+            reply = await bus.call(
+                Message(
+                    destination=defs.BLUEZ_SERVICE,
+                    path=device_path,
+                    interface=defs.DEVICE_INTERFACE,
+                    member="Pair",
+                )
+            )
+        assert_reply(reply)
+    except TimeoutError as err:
+        raise TransportError("pairing timed out after 60 s") from err
+    except Exception as err:
+        raise TransportError(f"BlueZ pairing failed: {err}") from err
+    console.log("info", f"Bonded with {address}. Now Connect (without 'bond first').")
+
+
 async def ble_scan(seconds: float) -> list[dict[str, Any]]:
     from bleak import BleakScanner  # noqa: PLC0415
 
@@ -377,6 +431,7 @@ class Console:
         self.loop = asyncio.get_event_loop()
         self._connecting = False
         self._send_tasks: set[asyncio.Task[None]] = set()
+        self.last_scan: list[dict[str, Any]] = []
 
     # -- fan-out ---------------------------------------------------------------------
 
@@ -464,6 +519,8 @@ class Console:
                 case "disconnect":
                     await self.disconnect()
                 case "pair":
+                    if msg.get("address"):
+                        self.state.address = str(msg["address"])
                     await self.pair()
                 case "ping":
                     await self.ping()
@@ -488,12 +545,17 @@ class Console:
         except (TransportError, SessionError, KeyError, ValueError) as err:
             self.log("error", f"{cmd}: {err}")
             self.push_state()
+        except Exception as err:  # bleak/BlueZ raise their own types; never drop the WebSocket
+            _LOGGER.exception("%s failed", cmd)
+            self.log("error", f"{cmd}: {type(err).__name__}: {err}")
+            await self.disconnect()
 
     async def scan(self, seconds: float) -> None:
         self.log("info", f"Scanning for {seconds:g}s …")
         devices = await self._scanner(seconds)
         ddm = [d for d in devices if d["protocol"]]
         self.log("info", f"Scan done: {len(devices)} devices, {len(ddm)} speak DDM")
+        self.last_scan = devices
         self.broadcast({"type": "scan", "devices": devices})
 
     async def connect(
@@ -560,14 +622,18 @@ class Console:
         self.push_state()
 
     async def pair(self) -> None:
-        if self.bleak_client is None:
-            raise SessionError("not connected via BLE")
-        self.log("info", "Requesting BLE pairing/bonding …")
-        try:
-            await self.bleak_client.pair()
-        except Exception as err:
-            raise TransportError(f"pairing failed: {err}") from err
-        self.log("info", "Pairing call returned without error")
+        if self.bleak_client is not None:
+            self.log("info", "Requesting BLE pairing/bonding on the open link …")
+            try:
+                await self.bleak_client.pair()
+            except Exception as err:
+                raise TransportError(f"pairing failed: {err}") from err
+            self.log("info", "Pairing call returned without error")
+            return
+        address = self.state.address
+        if not address:
+            raise SessionError("no device selected: enter or pick an address first")
+        await bluez_pair_unconnected(address, self)
 
     async def ping(self) -> None:
         if self.session is None:

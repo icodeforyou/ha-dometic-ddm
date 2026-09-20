@@ -101,7 +101,7 @@
         </select>
         <label class="small" title="Call BlueZ pairing right after the link is up, before enabling notifications. The Dometic app bonds first on Android."><input type="checkbox" id="pair-first"> bond first</label>
         <button id="btn-connect" class="primary">Connect</button>
-        <button id="btn-pair" title="Ask BlueZ to bond. The Dometic app bonds on Android.">Pair / bond</button>
+        <button id="btn-pair" title="Bond via BlueZ. Works without an open connection: BlueZ opens the link and bonds during setup. The Dometic app bonds first on Android.">Pair / bond</button>
         <button id="btn-ping" title="Send DDM1 PING (02) to nudge the device">Send PING</button>
         <button id="btn-subscribe" title="Subscribe to the dashboard set for this protocol">Subscribe dashboard</button>
       </div>
@@ -318,7 +318,7 @@
   $('#devices').onclick = (e) => { const tr = e.target.closest('tr[data-a]'); if (!tr) return; $('#address').value = tr.dataset.a; if (tr.dataset.p) $('#protocol').value = tr.dataset.p; };
   $('#btn-connect').onclick = () => { const a = $('#address').value.trim(); if (!a) return log('error', 'enter or pick an address'); send({ cmd: 'connect', address: a, protocol: $('#protocol').value, handshake: $('#handshake').value, pair: $('#pair-first').checked }); };
   $('#btn-disconnect').onclick = () => send({ cmd: 'disconnect' });
-  $('#btn-pair').onclick = () => send({ cmd: 'pair' });
+  $('#btn-pair').onclick = () => send({ cmd: 'pair', address: $('#address').value.trim() || undefined });
   $('#btn-ping').onclick = () => send({ cmd: 'ping' });
   $('#btn-subscribe').onclick = () => send({ cmd: 'subscribe' });
   $('#enable-writes').onchange = (e) => { if (e.target.checked && !confirm('Enable writes to the device? Make sure the read-outs match the AC display first.')) { e.target.checked = false; return; } send({ cmd: 'enable_writes', on: e.target.checked }); };
