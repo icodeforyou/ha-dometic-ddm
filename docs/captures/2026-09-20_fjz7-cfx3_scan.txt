@@ -1,0 +1,16 @@
+# BLE scan, 2026-09-20, laptop (Intel AX201, BlueZ 5.87) via tools/ac_console
+# Both devices classified correctly by pyddm.const.protocol_from_advertisement.
+
+Name          Address            RSSI  Protocol  Manufacturer data
+CFX3_a90bf8   FC:E8:C0:A9:0B:FA  -79   DDM1      0x0845: 01 FC E8 C0 A9 0B F8
+SHE_366f0c    68:FE:71:36:6F:0E  -86   DDM2      0x0845: 00
+
+# Observations
+# - SHE_ prefix = FreshJet (app firmware id "SHE"/SHAPE), so this is the FJZ7 2600. Not a Shelly
+#   (Shelly uses company id 0x0BA9).
+# - The CFX3 ALSO carries Dometic company id 0x0845. Payload = 01 + a MAC-like value that
+#   differs from the advertised address in the last byte (…0B F8 vs …0B FA). The doc only
+#   claimed 0x0845 for DDM2 devices; classification by "CFX3" name still wins, as in the app.
+# - FreshJet manufacturer payload is a single 00 byte.
+# - Name suffixes (a90bf8, 366f0c) look derived from the address: CFX3 a9 0b f8 matches the
+#   payload MAC bytes 4..6; FreshJet 36 6f 0c vs address 36 6F 0E (again last byte differs by 2).
