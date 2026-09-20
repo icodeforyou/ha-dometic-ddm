@@ -1,0 +1,77 @@
+# CFX3 write test, 2026-09-20 12:47-12:49 (same bonded session). Keepalive 02/04 frames omitted.
+# Result: write ACKed (04) and applied (display + re-subscribe show 4.0 °C), but the cooler does NOT
+# push the new value by itself; a SUBSCRIBE afterwards returns it. Also visible: compressor
+# start/stop cycles of ~3 s with voltage sag 13.2 → 11.4 V (battery protection level 1 = Medium).
+
+12:43:57,354  RX  00 00 40 01 01 B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 4C PUBLISH 00 40 01 01 = B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 4C  compartment.c0TemperatureHistoryHour = HistoryData(values=(18.2, 16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8), trailer=76)
+12:43:57,579  RX  00 10 40 01 01 00 00 00 00 00 00 00 00 00 80 00 80 00 80 4C PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 00 00 80 00 80 00 80 4C  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8), trailer=76)
+12:43:57,691  RX  00 00 40 03 01 06 00 04 00 00 00 19 00 00 80 00 80 00 80 4C PUBLISH 00 40 03 01 = 06 00 04 00 00 00 19 00 00 80 00 80 00 80 4C  power.dcCurrentHistoryHour = HistoryData(values=(0.6, 0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8), trailer=76)
+12:43:57,879  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2D PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2D  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=45)
+12:43:58,066  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2D PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2D  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=45)
+12:43:58,181  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2D PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2D  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=45)
+12:44:01,554  RX  00 00 01 01 01 82 00                             PUBLISH 00 01 01 01 = 82 00  compartment.c0MeasuredTemperature = 13.0 °C
+12:44:27,317  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:44:27,392  RX  00 00 01 03 01 79 00                             PUBLISH 00 01 03 01 = 79 00  power.batteryVoltageLevel = 12.1
+12:44:29,905  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:44:32,493  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:44:35,043  RX  00 00 01 01 01 78 00                             PUBLISH 00 01 01 01 = 78 00  compartment.c0MeasuredTemperature = 12.0 °C
+12:44:57,356  RX  00 00 40 01 01 B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 66 PUBLISH 00 40 01 01 = B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 66  compartment.c0TemperatureHistoryHour = HistoryData(values=(18.2, 16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8), trailer=102)
+12:44:57,468  RX  00 10 40 01 01 00 00 00 00 00 00 00 00 00 80 00 80 00 80 66 PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 00 00 80 00 80 00 80 66  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8), trailer=102)
+12:44:57,693  RX  00 00 40 03 01 06 00 04 00 00 00 19 00 00 80 00 80 00 80 66 PUBLISH 00 40 03 01 = 06 00 04 00 00 00 19 00 00 80 00 80 00 80 66  power.dcCurrentHistoryHour = HistoryData(values=(0.6, 0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8), trailer=102)
+12:44:57,806  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2E PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2E  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=46)
+12:44:57,993  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2E PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2E  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=46)
+12:44:58,107  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2E PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 2E  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=46)
+12:45:18,882  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:45:24,019  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:45:34,333  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:45:39,471  RX  00 00 01 01 01 6E 00                             PUBLISH 00 01 01 01 = 6E 00  compartment.c0MeasuredTemperature = 11.0 °C
+12:45:39,544  RX  00 00 01 03 01 81 00                             PUBLISH 00 01 03 01 = 81 00  power.batteryVoltageLevel = 12.9
+12:45:42,132  RX  00 00 01 01 01 78 00                             PUBLISH 00 01 01 01 = 78 00  compartment.c0MeasuredTemperature = 12.0 °C
+12:45:42,245  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:45:44,645  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:45:44,795  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:45:57,358  RX  00 00 40 01 01 B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 80 PUBLISH 00 40 01 01 = B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 80  compartment.c0TemperatureHistoryHour = HistoryData(values=(18.2, 16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8), trailer=128)
+12:45:57,470  RX  00 10 40 01 01 00 00 00 00 00 00 00 00 00 80 00 80 00 80 80 PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 00 00 80 00 80 00 80 80  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8), trailer=128)
+12:45:57,584  RX  00 00 40 03 01 06 00 04 00 00 00 19 00 00 80 00 80 00 80 80 PUBLISH 00 40 03 01 = 06 00 04 00 00 00 19 00 00 80 00 80 00 80 80  power.dcCurrentHistoryHour = HistoryData(values=(0.6, 0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8), trailer=128)
+12:45:57,770  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 30 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 30  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=48)
+12:45:57,883  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 30 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 30  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=48)
+12:45:58,108  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 30 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 30  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=48)
+12:45:58,220  RX  00 00 42 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 08 PUBLISH 00 42 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 08  compartment.c0TemperatureHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=8)
+12:45:58,408  RX  00 10 42 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 08 PUBLISH 10 42 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 08  compartment.c1TemperatureHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=8)
+12:45:58,595  RX  00 00 42 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 08 PUBLISH 00 42 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 08  power.dcCurrentHistoryWeek = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=8)
+12:46:54,210  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:46:56,797  RX  00 00 01 03 01 72 00                             PUBLISH 00 01 03 01 = 72 00  power.batteryVoltageLevel = 11.4
+12:46:57,397  RX  00 00 40 01 01 B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 99 PUBLISH 00 40 01 01 = B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 99  compartment.c0TemperatureHistoryHour = HistoryData(values=(18.2, 16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8), trailer=153)
+12:46:57,509  RX  00 10 40 01 01 00 00 00 00 00 00 00 00 00 80 00 80 00 80 99 PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 00 00 80 00 80 00 80 99  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8), trailer=153)
+12:46:57,698  RX  00 00 40 03 01 06 00 04 00 00 00 19 00 00 80 00 80 00 80 99 PUBLISH 00 40 03 01 = 06 00 04 00 00 00 19 00 00 80 00 80 00 80 99  power.dcCurrentHistoryHour = HistoryData(values=(0.6, 0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8), trailer=153)
+12:46:57,809  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 31 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 31  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=49)
+12:46:57,922  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 31 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 31  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=49)
+12:46:58,109  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 31 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 31  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=49)
+12:46:59,354  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:47:01,935  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:47:50,847  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:47:51,474  RX  00 00 02 01 01 14 00                             PUBLISH 00 02 01 01 = 14 00  compartment.c0SetTemperature = 2.0 °C
+12:47:56,975  --  WRITE compartment.c0SetTemperature ← 4.0
+12:47:56,976  TX  00 00 02 01 01 28 00                             PUBLISH 00 02 01 01 = 28 00  compartment.c0SetTemperature = 4.0 °C
+12:47:57,399  RX  00 00 40 01 01 B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 B3 PUBLISH 00 40 01 01 = B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 B3  compartment.c0TemperatureHistoryHour = HistoryData(values=(18.2, 16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8), trailer=179)
+12:47:57,511  RX  00 10 40 01 01 00 00 00 00 00 00 00 00 00 80 00 80 00 80 B3 PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 00 00 80 00 80 00 80 B3  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8), trailer=179)
+12:47:57,624  RX  00 00 40 03 01 06 00 04 00 00 00 19 00 00 80 00 80 00 80 B3 PUBLISH 00 40 03 01 = 06 00 04 00 00 00 19 00 00 80 00 80 00 80 B3  power.dcCurrentHistoryHour = HistoryData(values=(0.6, 0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8), trailer=179)
+12:47:57,812  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 32 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 32  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=50)
+12:47:57,999  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 32 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 32  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=50)
+12:47:58,224  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 32 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 32  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=50)
+12:47:58,637  RX  00 00 01 03 01 83 00                             PUBLISH 00 01 03 01 = 83 00  power.batteryVoltageLevel = 13.1
+12:48:08,949  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:48:09,062  RX  00 00 01 03 01 80 00                             PUBLISH 00 01 03 01 = 80 00  power.batteryVoltageLevel = 12.8
+12:48:14,087  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no
+12:48:14,274  RX  00 00 01 03 01 84 00                             PUBLISH 00 01 03 01 = 84 00  power.batteryVoltageLevel = 13.2
+12:48:32,125  RX  00 00 01 01 01 82 00                             PUBLISH 00 01 01 01 = 82 00  compartment.c0MeasuredTemperature = 13.0 °C
+12:48:57,401  RX  00 00 40 01 01 B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 CC PUBLISH 00 40 01 01 = B6 00 A8 00 87 00 9B 00 00 80 00 80 00 80 CC  compartment.c0TemperatureHistoryHour = HistoryData(values=(18.2, 16.8, 13.5, 15.5, -3276.8, -3276.8, -3276.8), trailer=204)
+12:48:57,589  RX  00 10 40 01 01 00 00 00 00 00 00 00 00 00 80 00 80 00 80 CC PUBLISH 10 40 01 01 = 00 00 00 00 00 00 00 00 00 80 00 80 00 80 CC  compartment.c1TemperatureHistoryHour = HistoryData(values=(0.0, 0.0, 0.0, 0.0, -3276.8, -3276.8, -3276.8), trailer=204)
+12:48:57,701  RX  00 00 40 03 01 06 00 04 00 00 00 19 00 00 80 00 80 00 80 CC PUBLISH 00 40 03 01 = 06 00 04 00 00 00 19 00 00 80 00 80 00 80 CC  power.dcCurrentHistoryHour = HistoryData(values=(0.6, 0.4, 0.0, 2.5, -3276.8, -3276.8, -3276.8), trailer=204)
+12:48:57,927  RX  00 00 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 33 PUBLISH 00 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 33  compartment.c0TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=51)
+12:48:58,039  RX  00 10 41 01 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 33 PUBLISH 10 41 01 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 33  compartment.c1TemperatureHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=51)
+12:48:58,226  RX  00 00 41 03 01 00 80 00 80 00 80 00 80 00 80 00 80 00 80 33 PUBLISH 00 41 03 01 = 00 80 00 80 00 80 00 80 00 80 00 80 00 80 33  power.dcCurrentHistoryDay = HistoryData(values=(-3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8, -3276.8), trailer=51)
+12:49:07,736  TX  01 00 02 01 01                                   SUBSCRIBE 00 02 01 01  compartment.c0SetTemperature
+12:49:08,277  RX  00 00 02 01 01 28 00                             PUBLISH 00 02 01 01 = 28 00  compartment.c0SetTemperature = 4.0 °C
+12:49:23,652  RX  00 00 03 03 01 01                                PUBLISH 00 03 03 01 = 01  power.compressorPower = yes
+12:49:26,278  RX  00 00 03 03 01 00                                PUBLISH 00 03 03 01 = 00  power.compressorPower = no

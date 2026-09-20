@@ -41,6 +41,19 @@ serial `44304345`, name `CFX3_a90bf8`.
   c1MeasuredTemperature 0.0, c1SetTemperature -15.0, c1DoorOpen 0, c1TemperatureRange
   -22 … 20, c1 history all-empty — placeholders on a single-zone unit.
 
+## Write test (12:47–12:49, `2026-09-20_cfx3_writes.log`)
+
+`00 00 02 01 01 28 00` (c0SetTemperature = 4.0 °C): cooler answered `04` after 120 ms and
+applied it (display; re-SUBSCRIBE returned `28 00`). **No unsolicited PUBLISH of the new
+value** — unlike the FreshJet, a CFX3 does not echo writes; the client must re-subscribe
+(or rely on the periodic refresh) to see the new state. Set back to 2.0 °C afterwards.
+
+Also observed during the session: compressor on → voltage 13.2 → 11.4 V within 2 s →
+compressor off, every ~60–75 s. Consistent with battery protection (level 1 Medium) on a weak
+12 V feed; no `errors.*`/`alerts.*` frame was published for it. History arrays (hour/day/week
+for temperature and DC current) are re-published every 60 s; the day array's trailer byte
+counts minutes.
+
 ## Verified
 
 - Bonding mandatory; pairing only while the cooler's pairing menu is active.
@@ -51,7 +64,7 @@ serial `44304345`, name `CFX3_a90bf8`.
 - Bulk subscriptions `01/02/03 00 00 81` work (open question 3: yes).
 - DDM1 codec: topic layout `[instance, param, class, group]`, int16 LE deci-values,
   INT16_ARRAY (min,max), UTF8 strings zero-terminated, INT8 bools. Display comparison
-  still to be done by the owner (18–19 °C, set 2 °C, 13.2 V).
+  confirmed by the owner via the set-temperature write (display followed 2 → 4 °C).
 - Unprompted PUBLISH on change (18.0 → 19.0 °C).
 
 ## To change in the code (not done yet, on request)
